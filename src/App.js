@@ -11,7 +11,8 @@ function App() {
     <Router>
       <div>
         <Header></Header>
-        <Routes>
+        <Routes>  
+          <Route index element={<HomePage />}></Route>
           <Route path="/HomePage" element = {<HomePage/>} />
           <Route path="/login" element={<LogIn />} />
           <Route path="/signin" element={<SignIn />} />

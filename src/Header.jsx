@@ -14,8 +14,7 @@ const Header = () => {
             className="w-12 h-12"
           />
           <div className="ml-2">
-            <span className="text-pink-500 text-lg font-bold">Shop</span>
-            <span className="text-gray-600 text-sm">Điện tử</span>
+            <span className="text-pink-500 text-lg font-bold">ONLINE E-STORE</span>
           </div>
         </div>
 
