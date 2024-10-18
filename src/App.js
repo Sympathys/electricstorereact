@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LogIn from './Pages/Account/LogIn';
 import SignIn from "./Pages/Account/SignIn";
 import Header from "./Header";
+import HomePage from "./Pages/HomePage/HomePage";
+import ForgetPassWord from "./Pages/Account/ForgetPassword";
 
 function App() {
   return (
@@ -10,8 +12,10 @@ function App() {
       <div>
         <Header></Header>
         <Routes>
+          <Route path="/HomePage" element = {<HomePage/>} />
           <Route path="/login" element={<LogIn />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/ForgetPassword" element={<ForgetPassWord/>}/>
         </Routes>
       </div>
     </Router>

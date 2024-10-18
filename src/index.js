@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Counter from './Counter';
 import Header from './Header';
 import App from './App';
 import LogIn from './Pages/Account/LogIn';

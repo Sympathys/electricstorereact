@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -35,7 +36,8 @@ const Header = () => {
           </div>
           <div className="flex items-center cursor-pointer">
             <i className="fas fa-user-circle text-gray-600"></i>
-            <span className="ml-1 text-gray-600">Tài khoản</span>
+            <Link to="/LogIn"className="ml-1 text-gray-600">Tài Khoản</Link>
+
           </div>
         </div>
       </div>
@@ -45,9 +47,9 @@ const Header = () => {
         <div className="container mx-auto flex justify-between items-center px-4">
           {/* Liên kết trang */}
           <nav className="flex space-x-6">
-            <a href="#" className="hover:underline">
+            <Link to="/HomePage" className="hover:underline">
               Trang chủ
-            </a>
+            </Link>
             <a href="#" className="hover:underline">
               Sản phẩm
             </a>
