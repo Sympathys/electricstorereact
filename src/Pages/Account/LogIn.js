@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 
 const LogIn = () => {
@@ -69,9 +69,9 @@ const LogIn = () => {
         </button>
       </div>
       {errPassword && <p className="text-red-500 text-sm">{errPassword}</p>}
-      <a href="#" className="text-pink-500 text-sm mb-4 self-start">
+      <Link to="/ForgetPassword" className="text-pink-500 text-sm mb-4 self-start">
         Quên mật khẩu?
-      </a>
+      </Link>
       <button
         onClick={handleLogin}
         className="bg-pink-500 text-white py-2 px-4 rounded-md w-full mb-2"
