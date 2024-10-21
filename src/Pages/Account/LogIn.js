@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import userService from "../../service/userService";
+import authService from "../../service/authService";
+import { useNavigate } from "react-router-dom";
 
 
 const LogIn = () => {
@@ -12,9 +15,20 @@ const LogIn = () => {
   const [errPassword, setErrPassword] = useState("");
   // Hiển thị mật khẩu
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleLogin = () => {
+  const navigate = useNavigate();
+  const handleLogin = async () => {
     // Kiểm tra điều kiện đăng nhập
+    try {
+      const data = await authService.login({account, password});
+      localStorage.setItem('user', data.data)
+      localStorage.setItem('userToken', data.token)
+      navigate('/HomePage')
+      console.log(data);
+    }
+    catch(error){
+      setErrAcc(error.response.data.message)
+      console.log(error.response.data.message);
+    }
     if (!account) {
       setErrAcc("Vui lòng nhập email.");
     } else {
@@ -25,12 +39,6 @@ const LogIn = () => {
       setErrPassword("Vui lòng nhập mật khẩu.");
     } else {
       setErrPassword("");
-    }
-
-    // Thực hiện đăng nhập khi đủ điều kiện
-    if (account && password) {
-      console.log("Đăng nhập thành công");
-      // Thực hiện logic đăng nhập
     }
   };
 

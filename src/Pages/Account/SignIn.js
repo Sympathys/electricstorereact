@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import authService from "../../service/authService";
+
+import { useNavigate } from "react-router-dom";
+import userService from "../../service/userService";
 
 const SignIn = () => {
   // Lưu biến cho tên, email, mật khẩu và xác nhận mật khẩu
@@ -15,8 +19,21 @@ const SignIn = () => {
   // Hiển thị mật khẩu
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleSignUp = () => {
+  const navigate = useNavigate();
+  const handleSignUp = async () => {
+    try {
+      const data = await authService.signup({ name, password, email });
+      window.alert('Account created successfully!');
+      navigate('/LogIn');
+      console.log(data);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        window.alert(`Error: ${error.response.data.message}`);
+      } else {
+        window.alert('Error: Something went wrong');
+      }
+      console.log(error);
+    }
     // Kiểm tra các trường nhập liệu
     if (!name) {
       setErrName("Vui lòng nhập tên.");
@@ -40,12 +57,6 @@ const SignIn = () => {
       setErrConfirmPassword("Mật khẩu không khớp.");
     } else {
       setErrConfirmPassword("");
-    }
-
-    // Thực hiện đăng ký khi tất cả điều kiện hợp lệ
-    if (name && email && password && password === confirmPassword) {
-      console.log("Đăng ký thành công");
-      // Thực hiện logic đăng ký
     }
   };
 
