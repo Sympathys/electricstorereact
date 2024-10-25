@@ -5,18 +5,23 @@ import SignIn from "./Pages/Account/SignIn";
 import Header from "./Header";
 import HomePage from "./Pages/HomePage/HomePage";
 import ForgetPassWord from "./Pages/Account/ForgetPassword";
+import ProductDetail from "./Pages/Product/ProductDetail";
 
 function App() {
   return (
     <Router>
       <div>
-        <Header></Header>
+        <Header />
         <Routes>  
-          <Route index element={<HomePage />}></Route>
-          <Route path="/HomePage" element = {<HomePage/>} />
+          <Route index element={<HomePage />} />
+          <Route path="/HomePage" element={<HomePage />} />
           <Route path="/login" element={<LogIn />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/ForgetPassword" element={<ForgetPassWord/>}/>
+          <Route path="/ForgetPassword" element={<ForgetPassWord />} />
+          
+          {/* Update this route to include the product id as a parameter */}
+          <Route path="/product/:id" element={<ProductDetail />} />  
+          
         </Routes>
       </div>
     </Router>

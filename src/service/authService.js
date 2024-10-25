@@ -17,8 +17,8 @@ const authService = {
         try {
             const response = await axiosInstance.post('/account/sign-up',{
                 Username: name,
-                Password: password,
                 Email : email,
+                Password: password,
             });
             return response.data;
         }

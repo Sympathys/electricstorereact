@@ -23,7 +23,7 @@ const SignIn = () => {
   const handleSignUp = async () => {
     try {
       const data = await authService.signup({ name, password, email });
-      window.alert('Account created successfully!');
+      window.alert("Truy cập vào email bạn dùng để đăng ký để xác nhận đăng ký!");
       navigate('/LogIn');
       console.log(data);
     } catch (error) {
