@@ -16,14 +16,16 @@ const LogIn = () => {
   // Hiển thị mật khẩu
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [id, setId] = useState("");
   const handleLogin = async () => {
     // Kiểm tra điều kiện đăng nhập
     try {
       const data = await authService.login({account, password});
       localStorage.setItem('user', data.data)
       localStorage.setItem('userToken', data.token)
-      navigate('/HomePage')
-      console.log(data);
+      setId(data._id);
+      navigate(`/HomePage/${id}`)
+      console.log(id);
     }
     catch(error){
       setErrAcc(error.response.data.message)
@@ -81,11 +83,11 @@ const LogIn = () => {
         Quên mật khẩu?
       </Link>
       <button
-        onClick={handleLogin}
+        onClick={() => handleLogin()}
         className="bg-pink-500 text-white py-2 px-4 rounded-md w-full mb-2"
       >
         Đăng nhập
-      </button>
+      </button> 
       <p className="text-sm">
         Chưa có tài khoản?{" "}
         <a href="#" className="text-pink-500 font-bold">

@@ -1,6 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import { useNavigate, useParams } from "react-router-dom"; // Sử dụng hook để điều hướng
+
+import productService from "../../service/productService";
+import ProductDetail from "../Product/ProductDetail";
 
 const HomePage = () => {
+  const { id } = useParams();
+  const [product, setProduct] = useState([]); // Khởi tạo với mảng rỗng
+  const [lengthProduct, setLengthProduct] = useState("");
+
+  const navigate = useNavigate(); // Hook điều hướng
+  const loadForm = async () => {
+    try {
+      const data = await productService.getAllProducts();
+      console.log(data);
+      setLengthProduct(data.total);
+      if (Array.isArray(data.data)) {  // Kiểm tra xem data có phải là mảng không
+        setProduct(data.data);         // Cập nhật sản phẩm nếu là mảng
+      } else {
+        console.error("Expected an array but got:", data.data);
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        window.alert(`Error: ${error.response.data.message}`);
+      } else {
+        window.alert("Error: Something went wrong");
+      }
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    loadForm();
+  }, []);
+  const handleProductClick = (id) => {
+    navigate(`/product/${id}`); // Điều hướng tới trang chi tiết sản phẩm
+  };
+
+
   return (
     <div className="container mx-auto p-4">
       {/* Thanh danh mục sản phẩm */}
@@ -47,51 +85,25 @@ const HomePage = () => {
           {/* Phần danh sách sản phẩm */}
           <h2 className="text-lg font-bold mb-4">SẢN PHẨM</h2>
           <div className="grid grid-cols-4 gap-4">
-            {/* Sản phẩm 1 */}
-            <div className="border rounded-lg p-4 shadow-md">
-              <img
-                src="https://via.placeholder.com/150"
-                alt="Iphone 13 promax"
-                className="w-full mb-4"
-              />
-              <h3 className="text-lg font-semibold">Iphone 13 promax</h3>
-              <p className="text-red-500 font-bold">22.990.000 đ</p>
-            </div>
-
-            {/* Sản phẩm 2 */}
-            <div className="border rounded-lg p-4 shadow-md">
-              <img
-                src="https://via.placeholder.com/150"
-                alt="Xiaomi 14T"
-                className="w-full mb-4"
-              />
-              <h3 className="text-lg font-semibold">Xiaomi 14T</h3>
-              <p className="text-red-500 font-bold">13.990.000 đ</p>
-            </div>
-
-            {/* Sản phẩm 3 */}
-            <div className="border rounded-lg p-4 shadow-md">
-              <img
-                src="https://via.placeholder.com/150"
-                alt="Laptop Dell Inspiron 15"
-                className="w-full mb-4"
-              />
-              <h3 className="text-lg font-semibold">
-                Laptop Dell Inspiron 15
-              </h3>
-              <p className="text-red-500 font-bold">16.490.000 đ</p>
-            </div>
-
-            {/* Sản phẩm 4 */}
-            <div className="border rounded-lg p-4 shadow-md">
-              <img
-                src="https://via.placeholder.com/150"
-                alt="Xiaomi Pad 6S Pro"
-                className="w-full mb-4"
-              />
-              <h3 className="text-lg font-semibold">Xiaomi Pad 6S Pro</h3>
-              <p className="text-red-500 font-bold">13.990.000 đ</p>
-            </div>
+            {product.length > 0 ? (
+              product.map((item, index) => (
+                <div
+                  key={index}
+                  className="border rounded-lg p-4 shadow-md cursor-pointer"
+                  onClick={() => handleProductClick(item.ID_Product)} // Gọi sự kiện khi nhấn
+                >
+                  <img
+                    src={item.Image || "https://via.placeholder.com/150"} // Thay thế bằng ảnh sản phẩm thực tế
+                    alt={item.Name}
+                    className="w-full mb-4"
+                  />
+                  <h3 className="text-lg font-semibold">{item.Name}</h3>
+                  <p className="text-red-500 font-bold">{item.Price} đ</p>
+                </div>
+              ))
+            ) : (
+              <p>Không có sản phẩm nào</p>
+            )}
           </div>
         </div>
       </div>
