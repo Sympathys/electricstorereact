@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import userService from "../../service/userService";
-import authService from "../../service/authService";
 import { useNavigate } from "react-router-dom";
+import clientAPI from "../../client-api/rest-client";
 
 
 const LogIn = () => {
@@ -16,31 +14,33 @@ const LogIn = () => {
   // Hiển thị mật khẩu
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [id, setId] = useState("");
   const handleLogin = async () => {
-    // Kiểm tra điều kiện đăng nhập
-    try {
-      const data = await authService.login({account, password});
-      localStorage.setItem('user', data.data)
-      localStorage.setItem('userToken', data.token)
-      setId(data._id);
-      navigate(`/HomePage/${id}`)
-      console.log(id);
-    }
-    catch(error){
-      setErrAcc(error.response.data.message)
-      console.log(error.response.data.message);
-    }
-    if (!account) {
-      setErrAcc("Vui lòng nhập email.");
-    } else {
-      setErrAcc("");
-    }
+      // Kiểm tra điều kiện đăng nhập
+      if (!account) {
+          setErrAcc("Vui lòng nhập email.");
+          return;
+      } else {
+          setErrAcc("");
+      }
 
-    if (!password) {
-      setErrPassword("Vui lòng nhập mật khẩu.");
-    } else {
-      setErrPassword("");
+      if (!password) {
+          setErrPassword("Vui lòng nhập mật khẩu.");
+          return;
+      } else {
+          setErrPassword("");
+      }
+
+      try {
+          // Gọi hàm authentication từ clientAPI để đăng nhập
+          const data = await clientAPI.service('auth').authentication('local', account, password);
+          // Lưu thông tin người dùng và token vào localStorage
+          localStorage.setItem('user', JSON.stringify(data.data)); // Lưu thông tin người dùng
+          localStorage.setItem('userToken', data.token); // Lưu token
+          navigate(`/HomePage`);
+      }catch (error) {
+        console.error("Error during login:", error);
+        console.error("Error details:", error.response);
+        setErrAcc(error.response?.data?.message || "Đăng nhập thất bại.");
     }
   };
 
@@ -51,7 +51,7 @@ const LogIn = () => {
       <button className="bg-pink-500 text-white py-2 px-4 rounded-l-lg w-1/2">
           Đăng nhập
         </button>
-        <Link to="/signin" className="bg-white text-black border border-gray-300 py-2 px-4 rounded-r-lg w-1/2 text-center">
+        <Link to="/signup" className="bg-white text-black border border-gray-300 py-2 px-4 rounded-r-lg w-1/2 text-center">
           Đăng ký
         </Link>
       </div>

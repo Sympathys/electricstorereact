@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import authService from "../../service/authService";
 
 import { useNavigate } from "react-router-dom";
-import userService from "../../service/userService";
 
-const SignIn = () => {
+import clientAPI from "../../client-api/rest-client";
+
+const SignUp = () => {
   // Lưu biến cho tên, email, mật khẩu và xác nhận mật khẩu
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,44 +21,55 @@ const SignIn = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const handleSignUp = async () => {
-    try {
-      const data = await authService.signup({ name, password, email });
-      window.alert("Truy cập vào email bạn dùng để đăng ký để xác nhận đăng ký!");
-      navigate('/LogIn');
-      console.log(data);
-    } catch (error) {
-      if (error.response && error.response.data) {
-        window.alert(`Error: ${error.response.data.message}`);
-      } else {
-        window.alert('Error: Something went wrong');
-      }
-      console.log(error);
-    }
     // Kiểm tra các trường nhập liệu
     if (!name) {
-      setErrName("Vui lòng nhập tên.");
+        setErrName("Vui lòng nhập tên.");
+        return;
     } else {
-      setErrName("");
+        setErrName("");
     }
 
     if (!email) {
-      setErrEmail("Vui lòng nhập email.");
+        setErrEmail("Vui lòng nhập email.");
+        return;
     } else {
-      setErrEmail("");
+        setErrEmail("");
     }
 
     if (!password) {
-      setErrPassword("Vui lòng nhập mật khẩu.");
+        setErrPassword("Vui lòng nhập mật khẩu.");
+        return;
     } else {
-      setErrPassword("");
+        setErrPassword("");
     }
 
     if (password !== confirmPassword) {
-      setErrConfirmPassword("Mật khẩu không khớp.");
+        setErrConfirmPassword("Mật khẩu không khớp.");
+        return;
     } else {
-      setErrConfirmPassword("");
+        setErrConfirmPassword("");
     }
-  };
+
+    try {
+        // Gọi phương thức tạo tài khoản từ clientAPI
+        const data = await clientAPI.service('account/sign-up').signup({
+            username: name,
+            email: email,
+            password: password,
+        });
+        
+        window.alert("Truy cập vào email bạn dùng để đăng ký để xác nhận đăng ký!");
+        navigate('/LogIn');
+        console.log(data);
+    } catch (error) {
+        if (error.response && error.response.data) {
+            window.alert(`Error: ${error.response.data.message}`);
+        } else {
+            window.alert('Error: Something went wrong');
+        }
+        console.log(error);
+    }
+};
 
   return (
     <div className="flex flex-col items-center p-6 border border-gray-300 rounded-lg w-80 mx-auto bg-white">
@@ -135,4 +146,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

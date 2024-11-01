@@ -1,24 +1,39 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import clientAPI from '../../client-api/rest-client';
+import Cookies from 'js-cookie';
 const InfoUser = () => {
-  const [userInfo, setUserInfo] = useState({
-    fullName: 'Lê Thanh Hùng',
-    email: 'nhon@gmail.com',
-    phoneNumber: '0123 456 789',
-    address: 'Thống Nhất, Đông Hòa, Dĩ An, Bình Dương'
-  });
+  const [userInfo, setUserInfo] = useState({});
+
+
+  useEffect(() => {
+    const userToken = localStorage.getItem('userToken');
+    const fetchUserInfo = async () => {
+      try {
+        const data = await clientAPI.service('user').get('information');
+        console.log(data);
+        setUserInfo(data.data); // Update user info based on API response
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserInfo(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleSave = () => {
-    // Save user information logic
-    console.log('User information saved:', userInfo);
+  const handleSave = async () => {
+    try {
+      await clientAPI.patch(userInfo._id, userInfo); // Cập nhật thông tin người dùng
+      console.log('User information saved:', userInfo);
+    } catch (error) {
+      console.error("Error saving user information:", error);
+    }
   };
 
   return (
@@ -30,7 +45,7 @@ const InfoUser = () => {
           id="fullName"
           name="fullName"
           type="text"
-          value={userInfo.fullName}
+          value={userInfo.name}
           onChange={handleChange}
           className="w-full px-3 py-2 border rounded"
         />
