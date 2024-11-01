@@ -9,7 +9,7 @@ import ProductDetail from "./Pages/Product/ProductDetail";
 import InfoUser from "./Pages/Account/InfoUser";
 import ProtectedRoute from "./ProtectedRoute";
 import NotFound from "./Pages/NotFound"; // Import trang NotFound
-import SideNav from "./Pages/SideNav";
+import SideNav from "./Pages/Admin/SideNav";
 
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.role;
@@ -49,6 +49,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
           {/* Route cho trang 404 */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} /> {/* Định tuyến tất cả các URL không khớp */}
