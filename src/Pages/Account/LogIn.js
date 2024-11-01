@@ -29,14 +29,20 @@ const LogIn = () => {
       } else {
           setErrPassword("");
       }
-
       try {
           // Gọi hàm authentication từ clientAPI để đăng nhập
           const data = await clientAPI.service('auth').authentication('local', account, password);
+          const userRole = data?.data?.role;
+
           // Lưu thông tin người dùng và token vào localStorage
           localStorage.setItem('user', JSON.stringify(data.data)); // Lưu thông tin người dùng
           localStorage.setItem('userToken', data.token); // Lưu token
-          navigate(`/HomePage`);
+          console.log(userRole);
+          if(userRole === "user"){
+            navigate(`/HomePage`);
+          }else {
+            navigate(`/nav`);
+          }
       }catch (error) {
         console.error("Error during login:", error);
         console.error("Error details:", error.response);

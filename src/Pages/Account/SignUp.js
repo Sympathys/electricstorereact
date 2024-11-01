@@ -42,7 +42,6 @@ const SignUp = () => {
     } else {
         setErrPassword("");
     }
-
     if (password !== confirmPassword) {
         setErrConfirmPassword("Mật khẩu không khớp.");
         return;
