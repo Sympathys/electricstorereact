@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import productService from '../../service/productService';  // Make sure this path is correct
 import clientAPI from "../../client-api/rest-client";
 const ProductDetail = () => {
   const { id } = useParams(); // Get the product ID from the URL
