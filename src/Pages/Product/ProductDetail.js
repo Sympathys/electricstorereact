@@ -1,39 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import productService from '../../service/productService';  // Make sure this path is correct
-
+import clientAPI from "../../client-api/rest-client";
 const ProductDetail = () => {
   const { id } = useParams(); // Get the product ID from the URL
-  const [productDetail, setProductDetail] = useState(null);
+  const [productDetail, setProductDetail] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProductDetail = async () => {
-      try {
-        const data = await productService.getProduct(id); // Fetch the product detail by ID
-        setProductDetail(data);
-      } catch (error) {
-        console.error("Failed to fetch product details", error);
-      }
+        try {
+            const data = await clientAPI.service('product').get(id); // Gọi API để lấy chi tiết sản phẩm
+            setProductDetail(data.data);
+        } catch (error) {
+            console.error("Failed to fetch product details", error);
+        }
     };
 
     fetchProductDetail();
-  }, [id]);
+    }, [id]);
 
-  const handleAddToCart = () => {
-    // Kiểm tra xem người dùng đã đăng nhập chưa
-    const userToken = localStorage.getItem('userToken');
-    
-    if (!userToken) {
-      // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-      navigate('/login');
-    } else {
-      // Nếu đã đăng nhập, thêm sản phẩm vào giỏ hàng
-      // Giả sử bạn có service để quản lý giỏ hàng, thực hiện thêm sản phẩm vào giỏ
-      console.log('Thêm sản phẩm vào giỏ hàng:', productDetail);
-      // TODO: Gọi hàm thêm sản phẩm vào giỏ hàng, ví dụ: cartService.addToCart(productDetail)
-    }
+    const handleAddToCart = async () => {
+      const userToken = localStorage.getItem('userToken');
+      if (!userToken) {
+          navigate('/login');
+      } else {
+          try {
+              const response = await clientAPI.service('cart').create(
+                {
+                idProduct: productDetail.idProduct,
+                quantity: 1,
+                nameOfProduct: productDetail.nameOfProduct,
+                price: productDetail.price,
+                }
+              );
+              console.log("Thêm sản phẩm vào giỏ hàng thành công:", response.data);
+          } catch (error) {
+              console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+          }
+      }
   };
+  
 
   if (!productDetail) {
     return <div>Loading...</div>;
@@ -44,9 +51,9 @@ const ProductDetail = () => {
       <div className="p-4">
         <img className="w-full h-64 object-cover object-center" src={productDetail.Image} alt={productDetail.Name} />
         <div className="mt-4">
-          <h2 className="text-gray-900 text-2xl font-bold">{productDetail.Name}</h2>
-          <p className="text-red-500 text-xl font-semibold mt-2">{productDetail.Price} ₫</p>
-          <p className="text-gray-600 mt-1">Mã sản phẩm: {productDetail.id}</p>
+          <h2 className="text-gray-900 text-2xl font-bold">{productDetail.nameOfProduct}</h2>
+          <p className="text-red-500 text-xl font-semibold mt-2">{productDetail.price} ₫</p>
+          <p className="text-gray-600 mt-1">Mã sản phẩm: {productDetail.idProduct}</p>
           <button 
             onClick={handleAddToCart}
             className="mt-4 bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
