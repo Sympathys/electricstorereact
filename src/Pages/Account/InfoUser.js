@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import clientAPI from '../../client-api/rest-client';
-import Cookies from 'js-cookie';
 const InfoUser = () => {
   const [userInfo, setUserInfo] = useState({});
 

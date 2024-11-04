@@ -1,41 +1,39 @@
 // src/Pages/ProductManagement/SideNav.js
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './style.css'; // Ensure this is imported
 
 const SideNav = () => {
-  const location = useLocation(); // Get the current route
+  const location = useLocation();
+
+  const routes = [
+    { path: '/ProductManagement', label: 'Quản lý sản phẩm' },
+    { path: '/ImportManagement', label: 'Quản lý nhập hàng' },
+    { path: '/ProviderManagement', label: 'Quản lý nhà cung cấp' },
+    { path: '/WarehouseManagement', label: 'Quản lý kho' },
+    { path: '/invoice-management', label: 'Quản lý hóa đơn' },
+    { path: '/customer-management', label: 'Quản lý khách hàng' },
+    { path: '/employee-management', label: 'Quản lý nhân viên' },
+    { path: '/account-management', label: 'Quản lý tài khoản' },
+    { path: '/order-management', label: 'Quản lý đơn hàng' },
+  ];
 
   return (
-    <div className="side-nav bg-white border-r h-screen">
+    <div className="bg-white border-r h-screen shadow-md">
       <ul className="flex flex-col p-4">
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/ProductManagement' ? 'active' : ''}`}>
-          <Link to="/ProductManagement">Quản lý sản phẩm</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/ImportManagement' ? 'active' : ''}`}>
-          <Link to="/ImportManagement">Quản lý nhập hàng</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/ProviderManagement' ? 'active' : ''}`}>
-          <Link to="/ProviderManagement">Quản lý nhà cung cấp</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/warehouse-management' ? 'active' : ''}`}>
-          <Link to="/warehouse-management">Quản lý kho</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/invoice-management' ? 'active' : ''}`}>
-          <Link to="/invoice-management">Quản lý hóa đơn</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/customer-management' ? 'active' : ''}`}>
-          <Link to="/customer-management">Quản lý khách hàng</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/employee-management' ? 'active' : ''}`}>
-          <Link to="/employee-management">Quản lý nhân viên</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/account-management' ? 'active' : ''}`}>
-          <Link to="/account-management">Quản lý tài khoản</Link>
-        </li>
-        <li className={`mb-2 cursor-pointer nav-item ${location.pathname === '/order-management' ? 'active' : ''}`}>
-          <Link to="/order-management">Quản lý đơn hàng</Link>
-        </li>
+        {routes.map(route => (
+          <li
+            key={route.path}
+            className={`mb-2 p-3 cursor-pointer rounded-md transition-colors duration-300 ${
+              location.pathname === route.path
+                ? 'bg-pink-500 text-white'
+                : 'hover:bg-gray-200'
+            }`}
+          >
+            <Link to={route.path} className="no-underline text-inherit">
+              {route.label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
