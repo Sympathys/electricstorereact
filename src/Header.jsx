@@ -40,6 +40,9 @@ const Header = () => {
     }
   };
 
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
   return (
     <header className="w-full bg-gray-100 border-b">
       <div className="flex items-center justify-between py-2 px-4 bg-white">
@@ -59,7 +62,7 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-6">
-          <div className="flex items-center cursor-pointer">
+          <div className="flex items-center cursor-pointer" onClick={handleCartClick}>
             <i className="fas fa-shopping-cart text-gray-600"></i>
             <span className="ml-1 text-gray-600">Giỏ hàng</span>
           </div>

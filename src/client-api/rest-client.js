@@ -76,15 +76,24 @@ class RestClient {
     // Tạo mới dữ liệu
     async create(data) {
         try {
+            // Determine the Content-Type based on the data provided
+            const isFormData = data instanceof FormData;
+            const headers = { 
+                Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+                'Content-Type': isFormData ? 'multipart/form-data' : 'application/json', // Set based on data type
+            };
+    
             const response = await this.axiosInstance.post(`/${this.path}`, data, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('userToken')}` },
+                headers,
             });
+    
             return response.data;
         } catch (error) {
             console.error("Error creating data", error);
             throw error;
         }
     }
+    
 
     // Lấy dữ liệu theo ID
     async get(objectId) {
@@ -99,38 +108,67 @@ class RestClient {
         }
     }
 
-    // Tìm kiếm dữ liệu với query
-    async find(query = '') {
-        try {
-            const response = await this.axiosInstance.get(`/${this.path}?${query}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error finding data", error);
-            throw error;
-        }
-    }
+// Tìm kiếm dữ liệu với query
+async find(query = '') {
+    try {
+        const headers = {
+            Authorization: `Bearer ${localStorage.getItem('userToken')}`, // Include the token
+        };
+        
+        const response = await this.axiosInstance.get(`/${this.path}?${query}`, { headers }); // Pass headers in the request
 
-    // Cập nhật dữ liệu theo ID
+        return response.data;
+    } catch (error) {
+        console.error("Error finding data", error);
+        throw error; // Rethrow the error for further handling if needed
+    }
+}
+
+
     async patch(objectId, data) {
         try {
-            const response = await this.axiosInstance.patch(`/${this.path}/${objectId}`, data);
-            return response.data;
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                throw new Error('User is not authenticated. Please log in again.');
+            }
+    
+            const headers = {
+                Authorization: `Bearer ${token}`, // Add the Authorization header
+                'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json', // Set Content-Type based on data type
+            };
+    
+            const response = await this.axiosInstance.put(`/${this.path}/${objectId}`, data, { headers });
+            console.log("Response data:", response.data); // Log the response data
+            return response.data; // Return the updated data
         } catch (error) {
-            console.error("Error updating data", error);
-            throw error;
+            console.error("Error updating data:", error.response ? error.response.data : error.message);
+            throw error; // Rethrow the error to handle it in the calling function
         }
     }
+    
+    
 
-    // Xóa dữ liệu theo ID
-    async remove(objectId) {
-        try {
-            const response = await this.axiosInstance.delete(`/${this.path}/${objectId}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error deleting data", error);
-            throw error;
+// Xóa dữ liệu theo ID
+async remove(objectId) {
+    try {
+        const token = localStorage.getItem('userToken');
+        if (!token) {
+            throw new Error('User is not authenticated. Please log in again.');
         }
+
+        const headers = {
+            Authorization: `Bearer ${token}`, // Add the Authorization header
+        };
+
+        const response = await this.axiosInstance.delete(`/${this.path}/${objectId}`, { headers });
+        console.log("Response data:", response.data); // Log the response data
+        return response.data; // Return the result of the deletion
+    } catch (error) {
+        console.error("Error deleting data:", error.response ? error.response.data : error.message);
+        throw error; // Rethrow the error to handle it in the calling function
     }
+}
+
 
     // Phương thức đăng ký
     async signup({ username, email, password }) {
@@ -146,6 +184,7 @@ class RestClient {
             throw error;
         }
     }
+    
 }
 
 // Khởi tạo clientAPI và thiết lập baseURL là localhost:3000

@@ -36,7 +36,7 @@ const LogIn = () => {
 
           // Lưu thông tin người dùng và token vào localStorage
           localStorage.setItem('user', JSON.stringify(data.data)); // Lưu thông tin người dùng
-          localStorage.setItem('userToken', data.token); // Lưu token
+          localStorage.setItem('userToken', data.accessToken); // Lưu token
           console.log(userRole);
           if(userRole === "user"){
             navigate(`/HomePage`);
