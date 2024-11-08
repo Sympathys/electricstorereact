@@ -43,19 +43,19 @@ const HomePage = () => {
         <div className="w-1/4">
           <h2 className="text-lg font-bold mb-4">DANH MỤC SẢN PHẨM</h2>
           <ul className="space-y-2">
-            <li className="flex items-center" onClick={() => handleProductClick("Điện thoại")}>
+            <li className="flex items-center hover:underline cursor-pointer" onClick={() => handleProductClick("Điện thoại")}>
               <i className="fas fa-mobile-alt"></i>
               <span className="ml-2">Điện thoại</span>
             </li>
-            <li className="flex items-center" onClick={() => handleProductClick("Laptop")}>
+            <li className="flex items-center hover:underline cursor-pointer" onClick={() => handleProductClick("Laptop")}>
               <i className="fas fa-laptop"></i>
               <span className="ml-2">Laptop</span>
             </li>
-            <li className="flex items-center" onClick={() => handleProductClick("Camera")}>
+            <li className="flex items-center hover:underline cursor-pointer" onClick={() => handleProductClick("Camera")}>
               <i className="fas fa-camera"></i>
               <span className="ml-2">Camera</span>
             </li>
-            <li className="flex items-center" onClick={() => handleProductClick("Máy tính bảng")}>
+            <li className="flex items-center hover:underline cursor-pointer" onClick={() => handleProductClick("Máy tính bảng")}>
               <i className="fas fa-tablet-alt"></i>
               <span className="ml-2">Máy tính bảng</span>
             </li>

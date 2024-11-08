@@ -27,10 +27,10 @@ const ProductDetail = () => {
           try {
               const response = await clientAPI.service('cart').create(
                 {
-                idProduct: productDetail.idProduct,
-                quantity: 1,
-                nameOfProduct: productDetail.nameOfProduct,
-                price: productDetail.price,
+                  _id: productDetail._id,
+                  quantity: 1,
+                  nameOfProduct: productDetail.nameOfProduct,
+                  price: productDetail.price,
                 }
               );
               console.log("Thêm sản phẩm vào giỏ hàng thành công:", response.data);
