@@ -15,6 +15,9 @@ import ProviderManagement from "./Pages/Admin/ProviderManagement/ProviderManagem
 import WarehouseManagement from "./Pages/Admin/WarehouseManagement/WarehouseManagement";
 import OrderManagement from "./Pages/Admin/OrderManagement/OrderManagement";
 import ImportManagement from "./Pages/Admin/ImportManagement/ImportManagement";
+import CartPage from "./Pages/Cart/CartPage";
+import CheckoutPage from "./Pages/Checkout/CheckoutPage";
+import ProductListing from "./Pages/Product/ProductListing";
 
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.role;
@@ -29,11 +32,20 @@ function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/ForgetPassword" element={<ForgetPassWord />} />
+
           <Route path="/ProductManagement" element={<ProductManagement/>}/>
           <Route path="/ProviderManagement" element={<ProviderManagement/>}/>
           <Route path="/WarehouseManagement" element={<WarehouseManagement/>}/>
           <Route path="/OrderManagement" element={<OrderManagement/>}/>
           <Route path="/ImportManagement" element={<ImportManagement/>}/>
+
+
+          <Route path ="/CartPage" element = {<CartPage/>}/>
+          <Route path ="/CheckoutPage" element = {<CheckoutPage/>}/>
+
+
+          <Route path = "/products/:type" element = {<ProductListing/>} />
+
           <Route 
             path="/info" 
             element={
@@ -42,14 +54,16 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route 
+          <Route path="/product/:id" element={<ProductDetail/>}/>
+
+          {/* <Route 
             path="/product/:id" 
             element={
-              <ProtectedRoute role={role} allowedRoles={['user']}>
+              <ProtectedRoute role={role} allowedRoles={['user', 'admin']}>
                 <ProductDetail />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route 
             path="/nav" 
             element={
