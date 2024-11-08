@@ -9,7 +9,7 @@ const CartPage = () => {
     const loadForm = async () => {
         try {
             const data = await clientAPI.service('cart').get('');
-
+            console.log(data);
             if (Array.isArray(data.data.products)) {
                 setCartItems(data.data.products);
             } else {
@@ -30,7 +30,6 @@ const CartPage = () => {
     }, []);
 
     const handleCheckout = () => {
-        // Navigate to the checkout page
         navigate("/CheckoutPage");
     };
 
@@ -38,47 +37,73 @@ const CartPage = () => {
         // Handle clicking on a product here
     };
 
-    const handleQuantityChange = async (cartId, productId, newQuantity) => {
+    const handleQuantityChange = async (productId, newQuantity) => {
         if (newQuantity < 1) {
-            // Optionally, you can handle the case where quantity goes below 1
             window.alert("Số lượng không thể nhỏ hơn 1.");
             return;
         }
     
-        // Update the cartItems state
-        const updatedCartItems = cartItems.map(cartItem => {
-            if (cartItem._id === cartId) {
+        // Update the cartItems state locally
+        const updatedCartItems = cartItems.map(product => {
+            if (product.idProduct === productId) {
                 return {
-                    ...cartItem,
-                    products: cartItem.products.map(product => {
-                        if (product.idProduct === productId) {
-                            return {
-                                ...product,
-                                quantity: newQuantity,
-                            };
-                        }
-                        return product;
-                    }),
+                    ...product,
+                    quantity: newQuantity,
                 };
             }
-            return cartItem;
+            return product;
         });
     
         setCartItems(updatedCartItems);
     
+        // Find the cart item associated with the given productId for the API call
+        const cartItem = updatedCartItems.find(product => product.idProduct === productId);
+    
         // Send an API request to update the quantity in the backend
         try {
-            await clientAPI.service('cart').patch(cartId, {
-                products: updatedCartItems.find(item => item._id === cartId).products
+            await clientAPI.service('cart').patch(cartItem._id, {
+                products: [{ idProduct: productId, quantity: newQuantity }]
             });
         } catch (error) {
             console.error("Failed to update quantity:", error);
             window.alert("Đã có lỗi xảy ra khi cập nhật số lượng.");
         }
     };
-
+    
     const handleSelectItem = (productId) => {
-        // Toggle selection of specific product
+        const updatedCartItems = cartItems.map(product => {
+            if (product.idProduct === productId) {
+                return {
+                    ...product,
+                    isSelected: !product.isSelected,
+                };
+            }
+            return product;
+        });
+    
+        setCartItems(updatedCartItems);
+    };
+
+    const handleDelete = async (productId) => {
+        // Remove the item locally
+        const updatedCartItems = cartItems.filter(product => product._id !== productId);
+        setCartItems(updatedCartItems);
+    
+        // Find the cart item associated with the given productId for the API call
+        const cartItem = cartItems.find(product => product._id === productId);
+        if (!cartItem) {
+            console.error("Product not found in the cart.");
+            return;
+        }
+        // Send an API request to delete the product from the backend
+        try {
+            await clientAPI.service('cart').remove('', {
+                data: { idProduct: cartItem.idProduct}
+            });
+        } catch (error) {
+            console.error("Failed to delete product:", error);
+            window.alert("Đã có lỗi xảy ra khi xóa sản phẩm.");
+        }
     };
 
     return (
@@ -109,19 +134,27 @@ const CartPage = () => {
                                     </button>
                                     <span className="mx-2 text-gray-800">{product.quantity}</span>
                                     <button
-                                        onClick={() => handleQuantityChange(product.idProduct, product.quantity + 1)}
+                                        onClick={() => handleQuantityChange(product._id, product.quantity + 1)}
                                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-gray-800"
                                     >
                                         +
                                     </button>
                                 </div>
                             </div>
-                            <input
-                                type="checkbox"
-                                className="form-checkbox h-5 w-5 text-pink-500"
-                                checked={product.isSelected || false}
-                                onChange={() => handleSelectItem(product.idProduct)}
-                            />
+                            <div className="flex flex-col items-center">
+                                <input
+                                    type="checkbox"
+                                    className="form-checkbox h-5 w-5 text-pink-500"
+                                    checked={product.isSelected || false}
+                                    onChange={() => handleSelectItem(product.idProduct)}
+                                />
+                                <button
+                                    onClick={() => handleDelete(product._id)}
+                                    className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                                >
+                                    Xóa
+                                </button>
+                            </div>
                         </div>
                     ))
                 )}

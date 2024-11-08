@@ -1,27 +1,63 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import clientAPI from "./client-api/rest-client";
 
 const Header = () => {
   const [user, setUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // State cho input tìm kiếm
+  const [filteredProducts, setFilteredProducts] = useState([]); // State cho sản phẩm đã lọc
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State quản lý hiển thị dropdown
+  const [products, setProducts] = useState([]); // State lưu danh sách sản phẩm
   const navigate = useNavigate();
-  const location = useLocation(); // Lắng nghe thay đổi đường dẫn
+  const location = useLocation(); // Theo dõi thay đổi location để cập nhật thông tin người dùng
 
+  // Lấy thông tin người dùng từ localStorage khi component mount
   useEffect(() => {
-    // Lấy thông tin user từ localStorage và trích xuất username
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser && storedUser.username) {
       setUser({ username: storedUser.username });
     } else {
-      setUser(null); // Đặt lại trạng thái user nếu không có
+      setUser(null);
     }
-  }, [location]); // Mỗi khi location thay đổi, header sẽ cập nhật lại
+  }, [location]);
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // Lấy dữ liệu sản phẩm từ clientAPI khi component mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await clientAPI.service('product').find(); // Gọi API để lấy tất cả sản phẩm
+        setProducts(response); // Giả sử dữ liệu trả về là mảng các sản phẩm
+      } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+      }
+    };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+    fetchProducts(); // Gọi API để lấy sản phẩm
+  }, []); // Chỉ gọi khi component mount
+
+  // Lọc sản phẩm khi thay đổi search term hoặc danh sách sản phẩm
+  useEffect(() => {
+    if (searchTerm && Array.isArray(products.data)) {
+      // Duyệt qua danh sách sản phẩm và kiểm tra xem tên sản phẩm có chứa từ khóa tìm kiếm không
+      const results = [];
+      for (let i = 0; i < products.data.length; i++) {
+        const product = products.data[i];
+        if (product.nameOfProduct.toLowerCase().includes(searchTerm.toLowerCase())) {
+          results.push(product); // Nếu có thì thêm vào kết quả
+        }
+      }
+      setFilteredProducts(results);
+    } else {
+      setFilteredProducts([]); // Nếu không có từ khóa tìm kiếm thì không hiển thị kết quả
+    }
+  }, [searchTerm, products]);
+ 
+  // Xử lý thay đổi input tìm kiếm
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
+  // Xử lý đăng xuất s
   const handleLogout = () => {
     const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
     
@@ -29,10 +65,6 @@ const Header = () => {
       try {
         localStorage.removeItem('user');
         localStorage.removeItem('userToken');
-        
-        // Đặt lại trạng thái dropdown
-        setIsDropdownOpen(false);
-        
         navigate(`/LogIn`);
       } catch (error) {
         console.error("Error during logout:", error);
@@ -40,25 +72,49 @@ const Header = () => {
     }
   };
 
+  // Xử lý sự kiện nhấn vào giỏ hàng
   const handleCartClick = () => {
     navigate('/CartPage');
   };
+
+  // Toggle dropdown visibility
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prevState) => !prevState); // Toggle dropdown
+  };
+
   return (
     <header className="w-full bg-gray-100 border-b">
       <div className="flex items-center justify-between py-2 px-4 bg-white">
-        <div className="flex items-center">
+      <div >
+        <Link to="/HomePage" className="flex items-center">
           <img src="https://via.placeholder.com/50" alt="Logo" className="w-12 h-12" />
           <div className="ml-2">
             <span className="text-pink-500 text-lg font-bold">ONLINE E-STORE</span>
           </div>
-        </div>
+        </Link>
+      </div>
 
-        <div className="flex items-center w-1/2">
+        <div className="flex items-center w-1/2 relative">
           <input
             type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500"
             placeholder="Tìm kiếm sản phẩm trên shop..."
           />
+          {filteredProducts.length > 0 && (
+            <ul className="absolute top-10 left-0 right-0 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+              {filteredProducts.map((product) => (
+                <li
+                  key={product.id}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => navigate(`/product/${product._id}`)} // Navigate đến trang chi tiết sản phẩm
+                >
+                  {product.nameOfProduct}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="flex items-center space-x-6">
@@ -71,12 +127,12 @@ const Header = () => {
             <div className="relative">
               <div
                 className="flex items-center cursor-pointer"
-                onClick={toggleDropdown}
+                onClick={toggleDropdown} // Toggle dropdown khi nhấn vào
               >
                 <i className="fas fa-user-circle text-gray-600"></i>
                 <span className="ml-1 text-gray-600">{user.username}</span>
               </div>
-              
+              {/* Dropdown menu cho người dùng */}
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                   <Link
