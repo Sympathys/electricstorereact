@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import clientAPI from '../../../client-api/rest-client'; // Ensure the path is correct
 
@@ -7,7 +6,6 @@ const WarehouseForm = ({ selectedWarehouse, onRefresh }) => {
     idProduct: '',
     nameOfProduct: '',
     quantity: 0,
-    price: 0,
     idProvider: '',
     nameOfProvider: '',
   });
@@ -45,6 +43,7 @@ const WarehouseForm = ({ selectedWarehouse, onRefresh }) => {
     setError('');
 
     if (name === 'idProvider') {
+      // Find the selected provider and update the nameOfProvider
       const selectedProvider = providers.find(provider => provider.idProvider === value);
       setWarehouse((prevWarehouse) => ({
         ...prevWarehouse,
@@ -56,14 +55,14 @@ const WarehouseForm = ({ selectedWarehouse, onRefresh }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!warehouse.idProduct || !warehouse.nameOfProduct || warehouse.quantity < 0 || warehouse.price < 0 || !warehouse.idProvider) {
+    if (!warehouse.idProduct || !warehouse.nameOfProduct || warehouse.quantity < 0 || !warehouse.idProvider) {
       setError('Vui lòng điền đầy đủ thông tin kho!');
       return;
     }
 
     try {
       const response = selectedWarehouse
-        ? await clientAPI.service('warehouse').update(selectedWarehouse.idProduct, warehouse)
+        ? await clientAPI.service('warehouse').patch(selectedWarehouse.idProduct, warehouse)
         : await clientAPI.service('warehouse').create(warehouse);
       console.log('Kho đã được', selectedWarehouse ? 'cập nhật' : 'thêm', 'thành công:', response);
       resetForm();
@@ -92,7 +91,6 @@ const WarehouseForm = ({ selectedWarehouse, onRefresh }) => {
       idProduct: '',
       nameOfProduct: '',
       quantity: 0,
-      price: 0,
       idProvider: '',
       nameOfProvider: '',
     });
@@ -136,17 +134,6 @@ const WarehouseForm = ({ selectedWarehouse, onRefresh }) => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Giá</label>
-          <input
-            type="number"
-            name="price"
-            value={warehouse.price}
-            onChange={handleChange}
-            className="border py-2 px-3 w-full"
-            min="0"
-          />
-        </div>
-        <div className="mb-4">
           <label className="block mb-2">Nhà Cung Cấp</label>
           <select
             name="idProvider"
@@ -158,7 +145,7 @@ const WarehouseForm = ({ selectedWarehouse, onRefresh }) => {
             <option value="">Chọn Nhà Cung Cấp</option>
             {providers.map(provider => (
               <option key={provider.idProvider} value={provider.idProvider}>
-                {provider.nameOfProvider}
+                {provider.idProvider} {/* Show provider ID */}
               </option>
             ))}
           </select>

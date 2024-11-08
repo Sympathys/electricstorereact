@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import clientAPI from '../../../client-api/rest-client'; // Đảm bảo đường dẫn chính xác
+import clientAPI from '../../../client-api/rest-client'; // Ensure the path is correct
 
 const ProductForm = ({ selectedProduct, onRefresh }) => {
   const [product, setProduct] = useState({
@@ -7,32 +7,42 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
     nameOfProduct: '',
     quantity: 1,
     price: '',
-    idTypeProduct: '',
+    typeProduct: '',
     image: null,
     status: 'Available',
+    description: '',
   });
 
+  const [warehouses, setWarehouses] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState('');
 
+  // Fetch warehouse data
   useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const response = await clientAPI.service('warehouse').find();
+        setWarehouses(response.data);
+      } catch (error) {
+        console.error('Error fetching warehouse data:', error);
+        setError('Error fetching warehouse data');
+      }
+    };
+
+    fetchWarehouses();
+
     if (selectedProduct) {
       setProduct({
-        idProduct: selectedProduct.idProduct,
-        nameOfProduct: selectedProduct.nameOfProduct,
+        idProduct: selectedProduct.idProduct || '',
+        nameOfProduct: selectedProduct.nameOfProduct || '',
         quantity: selectedProduct.quantity || 1,
-        price: selectedProduct.price,
-        idTypeProduct: selectedProduct.idTypeProduct,
-        image: selectedProduct.image,
-        status: selectedProduct.status,
+        price: selectedProduct.price || '',
+        typeProduct: selectedProduct.typeProduct || '',
+        image: selectedProduct.image || null,
+        status: selectedProduct.status || 'Available',
+        description: selectedProduct.description || '',
       });
-
-      if (selectedProduct.image) {
-        const formattedImagePath = `http://localhost:3000/${selectedProduct.image.replace(/\\/g, '/')}`;
-        setImagePreview(formattedImagePath);
-      } else {
-        setImagePreview(null);
-      }
+      setImagePreview(selectedProduct.image ? `http://localhost:3000/${selectedProduct.image.replace(/\\/g, '/')}` : null);
     } else {
       resetForm();
     }
@@ -40,13 +50,92 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Validate that quantity and price are numbers
-    const numericValue = name === 'quantity' || name === 'price' ? value.replace(/[^0-9.]/g, '') : value;
     setProduct((prevProduct) => ({
       ...prevProduct,
-      [name]: numericValue,
+      [name]: value,
     }));
     setError('');
+  };
+
+  const handleProductChange = (e) => {
+    const selectedId = e.target.value;
+    const selectedWarehouse = warehouses.find((item) => item.idProduct === selectedId);
+    if (selectedWarehouse) {
+      setProduct({
+        idProduct: selectedWarehouse.idProduct || '',
+        nameOfProduct: selectedWarehouse.nameOfProduct || '',
+        quantity: selectedWarehouse.quantity || 0,
+        price: selectedWarehouse.price || '',
+        typeProduct: selectedWarehouse.typeProduct || '',
+        image: selectedWarehouse.image || null,
+        status: selectedWarehouse.status || 'Available',
+        description: selectedWarehouse.description || '',
+      });
+      setImagePreview(selectedWarehouse.image ? `http://localhost:3000/${selectedWarehouse.image.replace(/\\/g, '/')}` : null);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!product.nameOfProduct || product.quantity <= 0 || !product.price || !product.typeProduct) {
+      setError('Vui lòng điền đầy đủ thông tin sản phẩm!');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('idProduct', product.idProduct);
+    formData.append('nameOfProduct', product.nameOfProduct);
+    formData.append('quantity', product.quantity);
+    formData.append('price', product.price);
+    formData.append('typeProduct', product.typeProduct);
+    formData.append('description', product.description);
+    if (product.image && product.image instanceof File) {
+      formData.append('image', product.image);
+    } else if (!product.image) { // Kiểm tra nếu không có hình ảnh
+      formData.append('image', ''); // Gửi chuỗi rỗng thay vì null hoặc object
+    }
+    formData.append('status', product.status);
+  
+    try {
+      const response = selectedProduct
+        ? await clientAPI.service('product').patch(selectedProduct.idProduct, formData)
+        : await clientAPI.service('product').create(formData);
+      console.log('Kho đã được', selectedProduct ? 'cập nhật' : 'thêm', 'thành công:', response);
+      resetForm();
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      console.error('Lỗi khi thêm/cập nhật kho:', error.response ? error.response.data : error.message);
+      setError('Có lỗi xảy ra khi thêm/cập nhật kho!');
+    }
+  };
+  
+
+  const resetForm = () => {
+    setProduct({
+      idProduct: '',
+      nameOfProduct: '',
+      quantity: 1,
+      price: '',
+      typeProduct: '',
+      image: null,
+      status: 'Available',
+      description: '',
+    });
+    setImagePreview(null);
+    setError('');
+  };
+
+  const handleDelete = async () => {
+    if (!selectedProduct) return;
+    try {
+      await clientAPI.service('product').remove(product.idProduct);
+      console.log('Sản phẩm đã được xóa thành công');
+      resetForm();
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      console.error('Lỗi khi xóa sản phẩm:', error.response ? error.response.data : error.message);
+      setError('Có lỗi xảy ra khi xóa sản phẩm!');
+    }
   };
 
   const handleImageChange = (e) => {
@@ -57,72 +146,7 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
         image: file,
       }));
       setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImagePreview(null);
     }
-    setError('');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!product.nameOfProduct || product.quantity <= 0 || !product.price || !product.idTypeProduct) {
-      setError('Vui lòng điền đầy đủ thông tin sản phẩm!');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('idProduct', product.idProduct);
-    formData.append('nameOfProduct', product.nameOfProduct);
-    formData.append('quantity', Number(product.quantity));
-    formData.append('price', Number(product.price));
-    formData.append('idTypeProduct', product.idTypeProduct);
-
-    // Append the image only if it's a file
-    if (product.image && product.image instanceof File) {
-      formData.append('image', product.image);
-    }
-
-    formData.append('status', product.status);
-
-    try {
-      const response = selectedProduct
-        ? await clientAPI.patch(product.idProduct, formData)
-        : await clientAPI.create(formData);
-      console.log('Sản phẩm đã được', selectedProduct ? 'cập nhật' : 'thêm', 'thành công:', response);
-      resetForm();
-      if (onRefresh) onRefresh();
-    } catch (error) {
-      console.error('Lỗi khi thêm/cập nhật sản phẩm:', error.response ? error.response.data : error.message);
-      setError('Có lỗi xảy ra khi thêm/cập nhật sản phẩm!');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!selectedProduct) return;
-    try {
-      await clientAPI.remove(product.idProduct);
-      console.log('Sản phẩm đã được xóa thành công');
-      resetForm();
-      if (onRefresh) onRefresh();
-    } catch (error) {
-      console.error('Lỗi khi xóa sản phẩm:', error.response ? error.response.data : error.message);
-      setError('Có lỗi xảy ra khi xóa sản phẩm!');
-    }
-  };
-
-  const resetForm = () => {
-    setProduct({
-      idProduct: '',
-      nameOfProduct: '',
-      quantity: 1,
-      price: '',
-      idTypeProduct: '',
-      image: null,
-      status: 'Available',
-    });
-    setImagePreview(null);
-    setError('');
   };
 
   return (
@@ -130,32 +154,38 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex-grow">
         <div className="mb-4">
-          <label className="block mb-2">ID_SP</label>
-          <input
-            type="text"
+          <label className="block mb-2">ID SP</label>
+          <select
             name="idProduct"
-            value={product.idProduct}
-            onChange={handleChange}
+            value={product.idProduct || ''}
+            onChange={handleProductChange}
             className="border py-2 px-3 w-full"
-            disabled={!!selectedProduct} // Không cho nhập khi chọn sản phẩm
-          />
+          >
+            <option value="">Chọn sản phẩm</option>
+            {warehouses.map((warehouse) => (
+              <option key={warehouse.idProduct} value={warehouse.idProduct}>
+                {warehouse.idProduct} - {warehouse.nameOfProduct} ({warehouse.quantity} còn)
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-4">
           <label className="block mb-2">Tên sản phẩm</label>
           <input
             type="text"
             name="nameOfProduct"
-            value={product.nameOfProduct}
+            value={product.nameOfProduct || ''}
             onChange={handleChange}
             className="border py-2 px-3 w-full"
+            disabled
           />
         </div>
         <div className="mb-4">
           <label className="block mb-2">Số lượng</label>
           <input
-            type="text" // Change to text
+            type="number"
             name="quantity"
-            value={product.quantity}
+            value={product.quantity || 0}
             onChange={handleChange}
             className="border py-2 px-3 w-full"
           />
@@ -163,9 +193,9 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
         <div className="mb-4">
           <label className="block mb-2">Giá</label>
           <input
-            type="text" // Change to text
+            type="text"
             name="price"
-            value={product.price}
+            value={product.price || ''}
             onChange={handleChange}
             className="border py-2 px-3 w-full"
           />
@@ -174,15 +204,30 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
           <label className="block mb-2">Loại sản phẩm</label>
           <input
             type="text"
-            name="idTypeProduct"
-            value={product.idTypeProduct}
+            name="typeProduct"
+            value={product.typeProduct || ''}
             onChange={handleChange}
             className="border py-2 px-3 w-full"
           />
         </div>
         <div className="mb-4">
+          <label className="block mb-2">Mô tả sản phẩm</label>
+          <textarea
+            name="description"
+            value={product.description || ''}
+            onChange={handleChange}
+            className="border py-2 px-3 w-full"
+            rows="3"
+          />
+        </div>
+        <div className="mb-4">
           <label className="block mb-2">Trạng thái</label>
-          <select name="status" value={product.status} onChange={handleChange} className="border py-2 px-3 w-full">
+          <select
+            name="status"
+            value={product.status || 'Available'}
+            onChange={handleChange}
+            className="border py-2 px-3 w-full"
+          >
             <option value="Available">Còn hàng</option>
             <option value="Not Available">Hết hàng</option>
           </select>
@@ -192,11 +237,35 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
           <input type="file" accept="image/*" onChange={handleImageChange} className="border py-2 px-3 w-full" />
           {imagePreview && <img src={imagePreview} alt="Hình ảnh xem trước" className="mt-2 w-32 h-32 object-cover" />}
         </div>
-        <div className="flex justify-between">
-          <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">Thêm</button>
-          <button type="button" onClick={handleSubmit} className={`bg-green-500 text-white px-4 py-2 rounded ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!selectedProduct}>Sửa</button>
-          <button type="button" onClick={handleDelete} className={`bg-red-500 text-white px-4 py-2 rounded ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!selectedProduct}>Xóa</button>
-          <button type="button" onClick={() => { resetForm(); onRefresh(); }} className="bg-blue-500 text-white px-4 py-2 rounded">Làm mới</button>
+        <div className="flex space-x-4">
+          <button
+            type="submit"
+            className="bg-yellow-500 text-white px-4 py-2 rounded"
+          >
+            Thêm
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className={`bg-green-500 text-white px-4 py-2 rounded ${!product.idProduct ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!product.idProduct}
+          >
+            Sửa
+          </button>
+          <button
+            type="button"
+            onClick={resetForm}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Đặt lại
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Xóa
+          </button>
         </div>
       </form>
     </div>

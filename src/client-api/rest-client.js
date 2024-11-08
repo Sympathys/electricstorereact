@@ -108,22 +108,20 @@ class RestClient {
         }
     }
 
-// Tìm kiếm dữ liệu với query
-async find(query = '') {
-    try {
-        const headers = {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`, // Include the token
-        };
-        
-        const response = await this.axiosInstance.get(`/${this.path}?${query}`, { headers }); // Pass headers in the request
-
-        return response.data;
-    } catch (error) {
-        console.error("Error finding data", error);
-        throw error; // Rethrow the error for further handling if needed
+    // Tìm kiếm dữ liệu với query
+    async find(query = '') {
+        try {
+            const headers = {
+                Authorization: `Bearer ${localStorage.getItem('userToken')}`
+            };
+            const response = await this.axiosInstance.get(`/${this.path}?${query}`, { headers });
+            return response.data;
+        } catch (error) {
+            console.error("Error finding data", error);
+            throw error;
+        }
     }
-}
-
+    
 
     async patch(objectId, data) {
         try {

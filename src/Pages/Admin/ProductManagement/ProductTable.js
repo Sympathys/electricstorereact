@@ -52,7 +52,7 @@ const ProductTable = ({ onProductSelect }) => {
         />
         <select onChange={handleSearchByChange} value={searchBy} className="border py-2 px-3">
           <option value="nameOfProduct">Tên sản phẩm</option>
-          <option value="idTypeProduct">Loại sản phẩm</option>
+          <option value="typeProduct">Loại sản phẩm</option>
           <option value="price">Giá sản phẩm</option>
         </select>
       </div>
@@ -66,6 +66,7 @@ const ProductTable = ({ onProductSelect }) => {
             <th className="py-2 px-4 border">Giá</th>
             <th className="py-2 px-4 border">Loại sản phẩm</th>
             <th className="py-2 px-4 border">Trạng thái</th>
+            <th className="py-2 px-4 border">Mô tả</th>
           </tr>
         </thead>
         <tbody>
@@ -76,13 +77,16 @@ const ProductTable = ({ onProductSelect }) => {
                 <td className="py-2 px-4 border">{product.nameOfProduct}</td>
                 <td className="py-2 px-4 border">{product.quantity}</td>
                 <td className="py-2 px-4 border">{product.price}</td>
-                <td className="py-2 px-4 border">{product.idTypeProduct}</td>
+                <td className="py-2 px-4 border">{product.typeProduct}</td>
                 <td className="py-2 px-4 border">{product.status === "Available" ? "Còn hàng" : "Hết hàng"}</td>
+                <td className="max-w-[100px] overflow-hidden text-ellipsis whitespace-nowrap py-2 px-4 border">
+                  {product.description}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={6} className="py-2 px-4 border text-center">Không có sản phẩm nào</td>
+              <td colSpan={7} className="py-2 px-4 border text-center">Không có sản phẩm nào</td>
             </tr>
           )}
         </tbody>

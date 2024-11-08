@@ -1,9 +1,6 @@
-
-import React, { useState, useEffect } from 'react';
-import clientAPI from '../../../client-api/rest-client';
+import React, { useState } from 'react';
 
 const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
-  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchBy, setSearchBy] = useState('nameOfProduct'); // Default search by product name
 
@@ -17,8 +14,6 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
 
   return (
     <div>
-      {error && <p className="text-red-500">{error}</p>}
-
       {/* Search controls */}
       <div className="mb-4 flex items-center space-x-2">
         <input
@@ -32,7 +27,8 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
           <option value="nameOfProduct">Product Name</option>
           <option value="idProduct">Product ID</option>
           <option value="quantity">Quantity</option>
-          <option value="price">Price</option>
+          <option value="idProvider">Provider ID</option>
+          <option value="nameOfProvider">Provider Name</option>
         </select>
       </div>
 
@@ -42,8 +38,8 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
             <th className="py-2 px-4 border">ID Product</th>
             <th className="py-2 px-4 border">Product Name</th>
             <th className="py-2 px-4 border">Quantity</th>
-            <th className="py-2 px-4 border">Price</th>
             <th className="py-2 px-4 border">Provider ID</th>
+            <th className="py-2 px-4 border">Provider Name</th>
           </tr>
         </thead>
         <tbody>
@@ -53,8 +49,8 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
                 <td className="py-2 px-4 border">{warehouse.idProduct}</td>
                 <td className="py-2 px-4 border">{warehouse.nameOfProduct}</td>
                 <td className="py-2 px-4 border">{warehouse.quantity}</td>
-                <td className="py-2 px-4 border">{warehouse.price}</td>
                 <td className="py-2 px-4 border">{warehouse.idProvider}</td>
+                <td className="py-2 px-4 border">{warehouse.nameOfProvider}</td>
               </tr>
             ))
           ) : (

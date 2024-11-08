@@ -10,14 +10,15 @@ import InfoUser from "./Pages/Account/InfoUser";
 import ProtectedRoute from "./ProtectedRoute";
 import NotFound from "./Pages/NotFound"; // Import trang NotFound
 import SideNav from "./Pages/Admin/SideNav";
-import CartPage from "./Pages/Cart/CartPage";
 import ProductManagement from "./Pages/Admin/ProductManagement/ProductManagement";
 import ProviderManagement from "./Pages/Admin/ProviderManagement/ProviderManagement";
 import WarehouseManagement from "./Pages/Admin/WarehouseManagement/WarehouseManagement";
+import OrderManagement from "./Pages/Admin/OrderManagement/OrderManagement";
+import ImportManagement from "./Pages/Admin/ImportManagement/ImportManagement";
 
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.role;
-  
+
   return (
     <Router>
       <div>
@@ -28,21 +29,11 @@ function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/ForgetPassword" element={<ForgetPassWord />} />
-          <Route path="/ProductManagement" element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
-                <ProductManagement />
-              </ProtectedRoute>
-            }/>
-          <Route path="/ProviderManagement" element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
-                <ProviderManagement />
-              </ProtectedRoute>
-            }/>
-          <Route path="/WarehouseManagement" element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
-                <WarehouseManagement />
-              </ProtectedRoute>
-            }/>
+          <Route path="/ProductManagement" element={<ProductManagement/>}/>
+          <Route path="/ProviderManagement" element={<ProviderManagement/>}/>
+          <Route path="/WarehouseManagement" element={<WarehouseManagement/>}/>
+          <Route path="/OrderManagement" element={<OrderManagement/>}/>
+          <Route path="/ImportManagement" element={<ImportManagement/>}/>
           <Route 
             path="/info" 
             element={
@@ -64,14 +55,6 @@ function App() {
             element={
               <ProtectedRoute role={role} allowedRoles={['admin']}>
                 <SideNav />
-              </ProtectedRoute>
-            }
-          />
-          <Route 
-            path="/cart" 
-            element={
-              <ProtectedRoute role={role} allowedRoles={['user']}>
-                <CartPage />
               </ProtectedRoute>
             }
           />
