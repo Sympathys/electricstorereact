@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import clientAPI from "../../client-api/rest-client";
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
+    const navigate = useNavigate();
 
     const loadForm = async () => {
         try {
@@ -28,7 +30,8 @@ const CartPage = () => {
     }, []);
 
     const handleCheckout = () => {
-        // Handle checkout functionality here
+        // Navigate to the checkout page
+        navigate("/CheckoutPage");
     };
 
     const handleProductClick = (idProduct) => {

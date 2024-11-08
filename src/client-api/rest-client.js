@@ -114,7 +114,7 @@ class RestClient {
             const headers = {
                 Authorization: `Bearer ${localStorage.getItem('userToken')}`
             };
-            const response = await this.axiosInstance.get(`/${this.path}?${query}`, { headers });
+            const response = await this.axiosInstance.get(`/${this.path}?${query}`, { headers }); 
             return response.data;
         } catch (error) {
             console.error("Error finding data", error);

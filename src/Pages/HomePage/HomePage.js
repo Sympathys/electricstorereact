@@ -27,9 +27,12 @@ const HomePage = () => {
   useEffect(() => {
     loadForm();
   }, []);
-  const handleProductClick = (id) => {
+  const handleProductDetailClick = (id) => {
     console.log(id);
     navigate(`/product/${id}`); // Điều hướng tới trang chi tiết sản phẩm
+  };
+  const handleProductClick = (type) => {
+    navigate(`/products/${type}`);
   };
 
 
@@ -40,19 +43,19 @@ const HomePage = () => {
         <div className="w-1/4">
           <h2 className="text-lg font-bold mb-4">DANH MỤC SẢN PHẨM</h2>
           <ul className="space-y-2">
-            <li className="flex items-center">
+            <li className="flex items-center" onClick={() => handleProductClick("Điện thoại")}>
               <i className="fas fa-mobile-alt"></i>
               <span className="ml-2">Điện thoại</span>
             </li>
-            <li className="flex items-center">
+            <li className="flex items-center" onClick={() => handleProductClick("Laptop")}>
               <i className="fas fa-laptop"></i>
               <span className="ml-2">Laptop</span>
             </li>
-            <li className="flex items-center">
+            <li className="flex items-center" onClick={() => handleProductClick("Camera")}>
               <i className="fas fa-camera"></i>
               <span className="ml-2">Camera</span>
             </li>
-            <li className="flex items-center">
+            <li className="flex items-center" onClick={() => handleProductClick("Máy tính bảng")}>
               <i className="fas fa-tablet-alt"></i>
               <span className="ml-2">Máy tính bảng</span>
             </li>
@@ -84,7 +87,7 @@ const HomePage = () => {
                 <div
                   key={index}
                   className="border rounded-lg p-4 shadow-md cursor-pointer"
-                  onClick={() => handleProductClick(item._id)} // Gọi sự kiện khi nhấn
+                  onClick={() => handleProductDetailClick(item._id)} // Gọi sự kiện khi nhấn
                 >
                   <img
                     src={item.Image || "https://via.placeholder.com/150"} // Thay thế bằng ảnh sản phẩm thực tế

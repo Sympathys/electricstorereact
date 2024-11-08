@@ -41,7 +41,7 @@ const Header = () => {
   };
 
   const handleCartClick = () => {
-    navigate('/cart');
+    navigate('/CartPage');
   };
   return (
     <header className="w-full bg-gray-100 border-b">
