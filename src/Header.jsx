@@ -14,8 +14,9 @@ const Header = () => {
   // Lấy thông tin người dùng từ localStorage khi component mount
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser.username) {
-      setUser({ username: storedUser.username });
+    
+    if (storedUser && storedUser.data) {
+      setUser({ username: storedUser.data.username });
     } else {
       setUser(null);
     }
