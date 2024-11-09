@@ -27,7 +27,7 @@ const ProductDetail = () => {
           try {
               const response = await clientAPI.service('cart').create(
                 {
-                  _id: productDetail._id,
+                  idProduct: productDetail._id,
                   quantity: 1,
                   nameOfProduct: productDetail.nameOfProduct,
                   price: productDetail.price,

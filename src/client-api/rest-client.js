@@ -171,7 +171,7 @@ async remove(objectId) {
     // Phương thức đăng ký
     async signup({ username, email, password }) {
         try {
-            const response = await this.axiosInstance.post('/account/sign-up', {
+            const response = await this.axiosInstance.post('/account', {
                 username: username,
                 email: email,
                 password: password,

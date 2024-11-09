@@ -51,7 +51,7 @@ const SignUp = () => {
 
     try {
         // Gọi phương thức tạo tài khoản từ clientAPI
-        const data = await clientAPI.service('account/sign-up').signup({
+        const data = await clientAPI.service('account').signup({
             username: name,
             email: email,
             password: password,

@@ -45,15 +45,15 @@ function App() {
 
 
           <Route path = "/products/:type" element = {<ProductListing/>} />
-
-          <Route 
+          <Route path = "/info" element = {<InfoUser/>}/>
+          {/* <Route 
             path="/info" 
             element={
               <ProtectedRoute role={role} allowedRoles={['admin', 'user']}>
                 <InfoUser />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route path="/product/:id" element={<ProductDetail/>}/>
 
           {/* <Route 

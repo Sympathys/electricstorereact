@@ -35,7 +35,7 @@ const LogIn = () => {
           const userRole = data?.data?.role;
 
           // Lưu thông tin người dùng và token vào localStorage
-          localStorage.setItem('user', JSON.stringify(data.data)); // Lưu thông tin người dùng
+          localStorage.setItem('user', JSON.stringify(data)); // Lưu thông tin người dùng
           localStorage.setItem('userToken', data.accessToken); // Lưu token
           console.log(userRole);
           if(userRole === "user"){

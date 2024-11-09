@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const navigate = useNavigate();
-
+    const user = JSON.parse(localStorage.getItem('user'));
+    const idCart = user?.idCart;
     const loadForm = async () => {
         try {
-            const data = await clientAPI.service('cart').get('');
-            console.log(data);
+            const data = await clientAPI.service('cart').get(idCart);
             if (Array.isArray(data.data.products)) {
                 setCartItems(data.data.products);
             } else {
@@ -97,14 +97,16 @@ const CartPage = () => {
         }
         // Send an API request to delete the product from the backend
         try {
-            await clientAPI.service('cart').remove('', {
-                data: { idProduct: cartItem.idProduct}
+            await clientAPI.service('cart').remove('delete', {
+                    idCart: idCart,
+                    idProduct: productId
             });
         } catch (error) {
             console.error("Failed to delete product:", error);
-            window.alert("Đã có lỗi xảy ra khi xóa sản phẩm.");
+            window.alert(error.message);
         }
     };
+    
 
     return (
         <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
