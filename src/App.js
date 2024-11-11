@@ -18,6 +18,7 @@ import ImportManagement from "./Pages/Admin/ImportManagement/ImportManagement";
 import CartPage from "./Pages/Cart/CartPage";
 import CheckoutPage from "./Pages/Checkout/CheckoutPage";
 import ProductListing from "./Pages/Product/ProductListing";
+import VerificationSuccess from "./Pages/VertificationSuccess";
 
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.role;
@@ -76,6 +77,7 @@ function App() {
           {/* Route cho trang 404 */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} /> {/* Định tuyến tất cả các URL không khớp */}
+          <Route path="/verification-success" element={<VerificationSuccess/>} />
         </Routes>
       </div>
     </Router>

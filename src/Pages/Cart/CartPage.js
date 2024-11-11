@@ -10,7 +10,6 @@ const CartPage = () => {
     const loadForm = async () => {
         try {
             const data = await clientAPI.service('cart').get(idCart);
-            console.log(data);
             if (Array.isArray(data.data.products)) {
                 setCartItems(data.data.products);
             } else {
@@ -62,9 +61,10 @@ const CartPage = () => {
     
         // Send an API request to update the quantity in the backend
         try {
-            await clientAPI.service('cart').patch(cartItem._id, {
-                products: [{ idProduct: productId, quantity: newQuantity }]
+            await clientAPI.service('cart').patch(idCart, {
+                idProduct: productId, quantity: newQuantity
             });
+            window.location.reload();
         } catch (error) {
             console.error("Failed to update quantity:", error);
             window.alert("Đã có lỗi xảy ra khi cập nhật số lượng.");
@@ -140,7 +140,7 @@ const CartPage = () => {
                                     </button>
                                     <span className="mx-2 text-gray-800">{product.quantity}</span>
                                     <button
-                                        onClick={() => handleQuantityChange(product._id, product.quantity + 1)}
+                                        onClick={() => handleQuantityChange(product.idProduct, product.quantity + 1)}
                                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-gray-800"
                                     >
                                         +
