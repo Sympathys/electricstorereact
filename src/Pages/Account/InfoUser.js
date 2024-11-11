@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import clientAPI from '../../client-api/rest-client';
 const InfoUser = () => {
   const [userInfo, setUserInfo] = useState({});
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem('user')));
-    //console.log(user);
+    const user = JSON.parse(localStorage.getItem('user'));
     const userId = user.idUser;
     console.log(userId);
     const fetchUserInfo = async () => {

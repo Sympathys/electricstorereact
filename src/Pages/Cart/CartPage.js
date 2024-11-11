@@ -10,6 +10,7 @@ const CartPage = () => {
     const loadForm = async () => {
         try {
             const data = await clientAPI.service('cart').get(idCart);
+            console.log(data);
             if (Array.isArray(data.data.products)) {
                 setCartItems(data.data.products);
             } else {
@@ -86,26 +87,29 @@ const CartPage = () => {
 
     const handleDelete = async (productId) => {
         // Remove the item locally
-        const updatedCartItems = cartItems.filter(product => product._id !== productId);
+        const updatedCartItems = cartItems.filter(product => product.idProduct !== productId);
         setCartItems(updatedCartItems);
     
         // Find the cart item associated with the given productId for the API call
-        const cartItem = cartItems.find(product => product._id === productId);
+        const cartItem = cartItems.find(product => product.idProduct === productId);
         if (!cartItem) {
             console.error("Product not found in the cart.");
             return;
         }
+    
+        // Concatenate idCart and productId into a single string
+        const objectId = `${idCart}-${productId}`;  // Use a separator like `-` or `/`
+    
         // Send an API request to delete the product from the backend
         try {
-            await clientAPI.service('cart').remove('delete', {
-                    idCart: idCart,
-                    idProduct: productId
-            });
+            await clientAPI.remove(objectId);  // Pass the combined objectId to remove
+            window.location.reload();
         } catch (error) {
             console.error("Failed to delete product:", error);
             window.alert(error.message);
         }
     };
+    
     
 
     return (
@@ -151,7 +155,7 @@ const CartPage = () => {
                                     onChange={() => handleSelectItem(product.idProduct)}
                                 />
                                 <button
-                                    onClick={() => handleDelete(product._id)}
+                                    onClick={() => handleDelete(product.idProduct)}
                                     className="mt-2 text-red-500 hover:text-red-700 text-sm"
                                 >
                                     Xóa
