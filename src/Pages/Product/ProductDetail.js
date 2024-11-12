@@ -48,7 +48,7 @@ const ProductDetail = () => {
   return (
     <div className="max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="p-4">
-        <img className="w-full h-64 object-cover object-center" src={productDetail.Image} alt={productDetail.Name} />
+        <img className="w-full h-64 object-cover object-center" src={productDetail.image ? `http://localhost:3000/${productDetail.image.replace(/\\/g, '/')}` : "https://via.placeholder.com/150"} alt={productDetail.Name} />
         <div className="mt-4">
           <h2 className="text-gray-900 text-2xl font-bold">{productDetail.nameOfProduct}</h2>
           <p className="text-red-500 text-xl font-semibold mt-2">{productDetail.price} ₫</p>

@@ -10,7 +10,6 @@ const CartPage = () => {
     const loadForm = async () => {
         try {
             const data = await clientAPI.service('cart').get(idCart);
-            console.log(data);
             if (Array.isArray(data.data.products)) {
                 setCartItems(data.data.products);
             } else {
@@ -31,7 +30,16 @@ const CartPage = () => {
     }, []);
 
     const handleCheckout = () => {
-        navigate("/CheckoutPage");
+        // Filter only the selected items
+        const selectedItems = cartItems.filter(product => product.isSelected);
+        
+        if (selectedItems.length === 0) {
+            window.alert("Vui lòng chọn sản phẩm để tiếp tục.");
+            return;
+        }
+
+        // Navigate to the checkout page with selected items
+        navigate("/CheckoutPage", { state: { selectedItems } });
     };
 
     const handleProductClick = (idProduct) => {
@@ -56,15 +64,12 @@ const CartPage = () => {
         });
     
         setCartItems(updatedCartItems);
-    
-        // Find the cart item associated with the given productId for the API call
-        const cartItem = updatedCartItems.find(product => product.idProduct === productId);
-    
         // Send an API request to update the quantity in the backend
         try {
-            await clientAPI.service('cart').patch(cartItem._id, {
-                products: [{ idProduct: productId, quantity: newQuantity }]
+            await clientAPI.service('cart').patch(idCart, {
+                idProduct: productId, quantity: newQuantity
             });
+            window.location.reload();
         } catch (error) {
             console.error("Failed to update quantity:", error);
             window.alert("Đã có lỗi xảy ra khi cập nhật số lượng.");
@@ -123,7 +128,7 @@ const CartPage = () => {
                         <div key={product._id} className="flex items-center justify-between border-b border-gray-200 py-4">
                             <img
                                 className="w-20 h-20 object-cover rounded"
-                                src={product.image || "placeholder.jpg"}
+                                src={product.image ? `http://localhost:3000/${product.image.replace(/\\/g, '/')}` : "https://via.placeholder.com/150"}
                                 alt={product.nameOfProduct}
                                 onClick={() => handleProductClick(product.idProduct)}
                             />
@@ -140,7 +145,7 @@ const CartPage = () => {
                                     </button>
                                     <span className="mx-2 text-gray-800">{product.quantity}</span>
                                     <button
-                                        onClick={() => handleQuantityChange(product._id, product.quantity + 1)}
+                                        onClick={() => handleQuantityChange(product.idProduct, product.quantity + 1)}
                                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-gray-800"
                                     >
                                         +
