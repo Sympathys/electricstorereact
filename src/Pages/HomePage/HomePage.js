@@ -35,7 +35,6 @@ const HomePage = () => {
     navigate(`/products/${type}`);
   };
 
-
   return (
     <div className="container mx-auto p-4">
       {/* Thanh danh mục sản phẩm */}
@@ -79,8 +78,8 @@ const HomePage = () => {
             />
           </div>
 
-          {/* Phần danh sách sản phẩm */}
-          <h2 className="text-lg font-bold mb-4">SẢN PHẨM</h2>
+            {/* Phần danh sách sản phẩm */}
+            <h2 className="text-lg font-bold mb-4">SẢN PHẨM</h2>
           <div className="grid grid-cols-4 gap-4">
             {product.length > 0 ? (
               product.map((item, index) => (
@@ -90,10 +89,11 @@ const HomePage = () => {
                   onClick={() => handleProductDetailClick(item._id)} // Gọi sự kiện khi nhấn
                 >
                   <img
-                    src={item.Image || "https://via.placeholder.com/150"} // Thay thế bằng ảnh sản phẩm thực tế
-                    alt={item.Name}
+                    src={item.image ? `http://localhost:3000/${item.image.replace(/\\/g, '/')}` : "https://via.placeholder.com/150"} // Kiểm tra và thay thế đường dẫn ảnh
+                    alt={item.nameOfProduct} // Đảm bảo alt là tên sản phẩm
                     className="w-full mb-4"
                   />
+                  
                   <h3 className="text-lg font-semibold">{item.nameOfProduct}</h3>
                   <p className="text-red-500 font-bold">{item.price} đ</p>
                 </div>

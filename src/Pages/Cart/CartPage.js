@@ -30,7 +30,16 @@ const CartPage = () => {
     }, []);
 
     const handleCheckout = () => {
-        navigate("/CheckoutPage");
+        // Filter only the selected items
+        const selectedItems = cartItems.filter(product => product.isSelected);
+        
+        if (selectedItems.length === 0) {
+            window.alert("Vui lòng chọn sản phẩm để tiếp tục.");
+            return;
+        }
+
+        // Navigate to the checkout page with selected items
+        navigate("/CheckoutPage", { state: { selectedItems } });
     };
 
     const handleProductClick = (idProduct) => {
@@ -55,10 +64,6 @@ const CartPage = () => {
         });
     
         setCartItems(updatedCartItems);
-    
-        // Find the cart item associated with the given productId for the API call
-        const cartItem = updatedCartItems.find(product => product.idProduct === productId);
-    
         // Send an API request to update the quantity in the backend
         try {
             await clientAPI.service('cart').patch(idCart, {
@@ -123,7 +128,7 @@ const CartPage = () => {
                         <div key={product._id} className="flex items-center justify-between border-b border-gray-200 py-4">
                             <img
                                 className="w-20 h-20 object-cover rounded"
-                                src={product.image || "placeholder.jpg"}
+                                src={product.image ? `http://localhost:3000/${product.image.replace(/\\/g, '/')}` : "https://via.placeholder.com/150"}
                                 alt={product.nameOfProduct}
                                 onClick={() => handleProductClick(product.idProduct)}
                             />
