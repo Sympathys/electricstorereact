@@ -21,29 +21,29 @@ const CheckoutPage = () => {
     };
 
     const checkOutData = {
-        nameCustomer: name,
+        nameOfCustomer: name,
         phone: phoneNumber,
         address: shippingAddress,
-        paymentMethod,
+        payment_method: paymentMethod,
         products: selectedItems
     };
 
     const handleCheckoutSubmit = async () => {
         try {
-            if (paymentMethod === "bankTransfer") {
-                navigate("/bank-transfer-qr-code"); // Điều hướng đến trang QR code
-                return; // Kết thúc hàm ở đây nếu là chuyển khoản ngân hàng
-            }
-    
             const data = await clientAPI.service('order').create(checkOutData);
-            console.log(data);
     
             // Redirect to order pending page if payment method is COD
-            if (paymentMethod === "cod") {
+            if (paymentMethod === "Cod") {
                 navigate("/order-pending", { state: { orderId: data.data._id } });
-            } else {
+            } 
+            else if (paymentMethod === "Bank") {
+                
+                navigate("/bank-transfer-qr-code", {state: {linkPayment: data.data.linkPayment}}); // Điều hướng đến trang QR code
+                return; // Kết thúc hàm ở đây nếu là chuyển khoản ngân hàng
+            }else {
                 window.alert("Thanh toán thành công!");
             }
+            
         } catch (error) {
             if (error.response && error.response.data) {
                 window.alert(`Error: ${error.response.data.message}`);
@@ -99,8 +99,8 @@ const CheckoutPage = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                 >
                     <option value="creditCard">Thẻ tín dụng</option>
-                    <option value="bankTransfer">Chuyển khoản ngân hàng</option>
-                    <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                    <option value="Bank">Chuyển khoản ngân hàng</option>
+                    <option value="Cod">Thanh toán khi nhận hàng (COD)</option>
                 </select>
             </div>
 

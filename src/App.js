@@ -21,6 +21,8 @@ import ProductListing from "./Pages/Product/ProductListing";
 import VerificationSuccess from "./Pages/VertificationSuccess";
 import OrderPending from "./Pages/Checkout/OderPending";
 import BankTransferQRCode from "./Pages/Checkout/BankTransferQRCode";
+import OrdersPage from "./Pages/Order/OrdersPage";
+import OrderDetailPage from "./Pages/Order/OrderDetailPage";
 
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.role;
@@ -51,6 +53,8 @@ function App() {
           <Route path = "/info" element = {<InfoUser/>}/>
           <Route path = "/order-pending" element = {<OrderPending/>} />
           <Route path="/bank-transfer-qr-code" element={<BankTransferQRCode />} />
+          <Route path="/orders-page" element = {<OrdersPage/>} />
+          <Route path="/OrderDetail/:id" element = {<OrderDetailPage/>} />
           {/* <Route 
             path="/info" 
             element={
