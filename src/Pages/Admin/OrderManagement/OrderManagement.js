@@ -37,8 +37,10 @@ const OrderManagement = () => {
 
   return (
     <div className="flex h-screen">
-      <SideNav />
-      <div className="flex-grow p-4">
+      <div className="w-1/5 bg-gray-200 h-full">
+        <SideNav />
+      </div>
+      <div className="w-4/5 p-4 overflow-auto">
         {loading ? (
           <p>Loading orders...</p>
         ) : error ? (

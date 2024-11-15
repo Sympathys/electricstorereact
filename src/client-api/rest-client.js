@@ -93,7 +93,6 @@ class RestClient {
             throw error;
         }
     }
-    
 
     // Lấy dữ liệu theo ID
     async get(objectId) {
@@ -126,10 +125,6 @@ class RestClient {
     async patch(objectId, data) {
         try {
             const token = localStorage.getItem('userToken');
-            if (!token) {
-                throw new Error('User is not authenticated. Please log in again.');
-            }
-    
             const headers = {
                 Authorization: `Bearer ${token}`, // Add the Authorization header
                 'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json', // Set Content-Type based on data type

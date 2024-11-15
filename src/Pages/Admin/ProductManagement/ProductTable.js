@@ -1,97 +1,121 @@
 import React, { useState, useEffect } from 'react';
-import clientAPI from '../../../client-api/rest-client'; // Nhập clientAPI
+import clientAPI from '../../../client-api/rest-client';
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, Typography, TablePagination, Box, Chip, TextField, MenuItem
+} from '@mui/material';
 
 const ProductTable = ({ onProductSelect }) => {
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchBy, setSearchBy] = useState('nameOfProduct'); // Mặc định tìm kiếm theo tên sản phẩm
-
-  const fetchProducts = async () => {
-    try {
-      const response = await clientAPI.service('product').find(); // Gọi phương thức 'find' để lấy sản phẩm
-      setProducts(response.data); // Cập nhật danh sách sản phẩm
-    } catch (error) {
-      setError('Không thể lấy dữ liệu sản phẩm');
-      console.error("Error fetching products:", error);
-    }
-  };
+  const [searchBy, setSearchBy] = useState('nameOfProduct');
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await clientAPI.service('product').find();
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
     fetchProducts();
   }, []);
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleSearchByChange = (e) => {
-    setSearchBy(e.target.value);
-  };
-
-  const handleRowClick = (product) => {
-    onProductSelect(product);
-  };
-
-  const filteredProducts = products.filter((product) =>
+  const filteredProducts = products.filter(product =>
     product[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const formatPrice = (price) => new Intl.NumberFormat('vi-VN', {
+    style: 'currency', currency: 'VND'
+  }).format(price);
+
+  const getStatusLabel = (status) => {
+    return status === 'Available' ? 'Còn hàng' : 'Hết hàng';
+  };
+
   return (
-    <div>
-      {error && <p className="text-red-500">{error}</p>}
-
-      {/* Search controls */}
-      <div className="mb-4 flex items-center space-x-2">
-        <input
-          type="text"
-          placeholder="Tìm kiếm sản phẩm..."
+    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
+        Danh sách sản phẩm
+      </Typography>
+      
+      <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
+        <TextField
+          label="Tìm kiếm"
+          variant="outlined"
+          size="small"
           value={searchTerm}
-          onChange={handleSearch}
-          className="border py-2 px-3 w-1/2"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ flex: 1 }}
         />
-        <select onChange={handleSearchByChange} value={searchBy} className="border py-2 px-3">
-          <option value="nameOfProduct">Tên sản phẩm</option>
-          <option value="typeProduct">Loại sản phẩm</option>
-          <option value="price">Giá sản phẩm</option>
-        </select>
-      </div>
+        <TextField
+          select
+          label="Tìm kiếm theo"
+          value={searchBy}
+          onChange={(e) => setSearchBy(e.target.value)}
+          size="small"
+          sx={{ width: 180 }}
+        >
+          <MenuItem value="nameOfProduct">Tên sản phẩm</MenuItem>
+          <MenuItem value="typeProduct">Loại sản phẩm</MenuItem>
+        </TextField>
+      </Box>
 
-      <table className="min-w-full bg-white table-auto">
-        <thead>
-          <tr>
-            <th className="py-2 px-4 border">ID_SP</th>
-            <th className="py-2 px-4 border">Tên</th>
-            <th className="py-2 px-4 border">Số lượng</th>
-            <th className="py-2 px-4 border">Giá</th>
-            <th className="py-2 px-4 border">Loại sản phẩm</th>
-            <th className="py-2 px-4 border">Trạng thái</th>
-            <th className="py-2 px-4 border">Mô tả</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product, index) => (
-              <tr key={index} onClick={() => handleRowClick(product)} className="cursor-pointer hover:bg-gray-100">
-                <td className="py-2 px-4 border">{product.idProduct}</td>
-                <td className="py-2 px-4 border">{product.nameOfProduct}</td>
-                <td className="py-2 px-4 border">{product.quantity}</td>
-                <td className="py-2 px-4 border">{product.price}</td>
-                <td className="py-2 px-4 border">{product.typeProduct}</td>
-                <td className="py-2 px-4 border">{product.status === "Available" ? "Còn hàng" : "Hết hàng"}</td>
-                <td className="max-w-[100px] overflow-hidden text-ellipsis whitespace-nowrap py-2 px-4 border">
-                  {product.description}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={7} className="py-2 px-4 border text-center">Không có sản phẩm nào</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+      <TableContainer sx={{ maxHeight: 440 }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell>Mã SP</TableCell>
+              <TableCell>Tên sản phẩm</TableCell>
+              <TableCell>Loại</TableCell>
+              <TableCell align="right">Số lượng</TableCell>
+              <TableCell align="right">Giá</TableCell>
+              <TableCell align="center">Trạng thái</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(product => (
+              <TableRow key={product.idProduct} hover onClick={() => onProductSelect(product)}>
+                <TableCell>{product.idProduct}</TableCell>
+                <TableCell>
+                  <Box>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      {product.nameOfProduct}
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      {product.description?.slice(0, 100)}{product.description?.length > 100 ? '...' : ''}
+                    </Typography>
+                  </Box>
+                </TableCell>
+                <TableCell>{product.typeProduct}</TableCell>
+                <TableCell align="right">{product.quantity}</TableCell>
+                <TableCell align="right">{formatPrice(product.price)}</TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={getStatusLabel(product.status)}
+                    color={product.status === 'Available' ? 'success' : 'error'}
+                    size="small"
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredProducts.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={(event, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(event) => { setRowsPerPage(parseInt(event.target.value, 10)); setPage(0); }}
+        labelRowsPerPage="Số hàng mỗi trang:"
+      />
+    </Paper>
   );
 };
 

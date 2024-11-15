@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import clientAPI from '../../../client-api/rest-client'; // Ensure the path is correct
+import clientAPI from '../../../client-api/rest-client';
 
 const ProductForm = ({ selectedProduct, onRefresh }) => {
   const [product, setProduct] = useState({
@@ -16,8 +16,9 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
   const [warehouses, setWarehouses] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false); // Để theo dõi trạng thái upload
 
-  // Fetch warehouse data
+  // Fetch warehouse data and populate form if a product is selected
   useEffect(() => {
     const fetchWarehouses = async () => {
       try {
@@ -42,7 +43,7 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
         status: selectedProduct.status || 'Available',
         description: selectedProduct.description || '',
       });
-      setImagePreview(selectedProduct.image ? `http://localhost:3000/${selectedProduct.image.replace(/\\/g, '/')}` : null);
+      setImagePreview(selectedProduct.image ? selectedProduct.image : null);
     } else {
       resetForm();
     }
@@ -71,7 +72,40 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
         status: selectedWarehouse.status || 'Available',
         description: selectedWarehouse.description || '',
       });
-      setImagePreview(selectedWarehouse.image ? `http://localhost:3000/${selectedWarehouse.image.replace(/\\/g, '/')}` : null);
+      setImagePreview(selectedWarehouse.image || null);
+    }
+  };
+
+  const handleImageUpload = async (file) => {
+    if (!file) {
+      setError('No file selected for upload.');
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'Upload_image'); // Preset name
+    formData.append('cloud_name', 'dfsxqmwkz'); // Cloudinary cloud name
+
+    try {
+      setUploading(true);
+      const response = await fetch('https://api.cloudinary.com/v1_1/dfsxqmwkz/image/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      setUploading(false);
+      if (data.secure_url) {
+        return data.secure_url; // Trả về URL của ảnh đã upload
+      } else {
+        setError('Failed to upload image to Cloudinary.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error uploading image to Cloudinary:', error);
+      setError('Error uploading image.');
+      setUploading(false);
+      return null;
     }
   };
 
@@ -81,34 +115,30 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
       setError('Vui lòng điền đầy đủ thông tin sản phẩm!');
       return;
     }
-  
-    const formData = new FormData();
-    formData.append('idProduct', product.idProduct);
-    formData.append('nameOfProduct', product.nameOfProduct);
-    formData.append('quantity', product.quantity);
-    formData.append('price', product.price);
-    formData.append('typeProduct', product.typeProduct);
-    formData.append('description', product.description);
-    if (product.image && product.image instanceof File) {
-      formData.append('image', product.image);
-    } else if (!product.image) { // Kiểm tra nếu không có hình ảnh
-      formData.append('image', ''); // Gửi chuỗi rỗng thay vì null hoặc object
+
+    let imageUrl = product.image;
+    if (product.image instanceof File) {
+      imageUrl = await handleImageUpload(product.image); // Upload ảnh lên Cloudinary
+      if (!imageUrl) return; // Dừng nếu upload thất bại
     }
-    formData.append('status', product.status);
-  
+
+    const productData = {
+      ...product,
+      image: imageUrl || '', // Sử dụng URL ảnh từ Cloudinary
+    };
+
     try {
       const response = selectedProduct
-        ? await clientAPI.service('product').patch(selectedProduct.idProduct, formData)
-        : await clientAPI.service('product').create(formData);
-      console.log('Kho đã được', selectedProduct ? 'cập nhật' : 'thêm', 'thành công:', response);
+        ? await clientAPI.service('product').patch(selectedProduct.idProduct, productData)
+        : await clientAPI.service('product').create(productData);
+      console.log('Sản phẩm đã được', selectedProduct ? 'cập nhật' : 'thêm', 'thành công:', response);
       resetForm();
       if (onRefresh) onRefresh();
     } catch (error) {
-      console.error('Lỗi khi thêm/cập nhật kho:', error.response ? error.response.data : error.message);
-      setError('Có lỗi xảy ra khi thêm/cập nhật kho!');
+      console.error('Lỗi khi thêm/cập nhật sản phẩm:', error.response ? error.response.data : error.message);
+      setError('Có lỗi xảy ra khi thêm/cập nhật sản phẩm!');
     }
   };
-  
 
   const resetForm = () => {
     setProduct({
@@ -125,19 +155,6 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
     setError('');
   };
 
-  const handleDelete = async () => {
-    if (!selectedProduct) return;
-    try {
-      await clientAPI.service('product').remove(product.idProduct);
-      console.log('Sản phẩm đã được xóa thành công');
-      resetForm();
-      if (onRefresh) onRefresh();
-    } catch (error) {
-      console.error('Lỗi khi xóa sản phẩm:', error.response ? error.response.data : error.message);
-      setError('Có lỗi xảy ra khi xóa sản phẩm!');
-    }
-  };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -148,18 +165,35 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
       setImagePreview(URL.createObjectURL(file));
     }
   };
+  const handleDelete = async () => {
+    if (!selectedProduct || !selectedProduct._id) {
+      setError('Không tìm thấy sản phẩm để xóa!');
+      return;
+    }
+  
+    try {
+      const response = await clientAPI.service('product').remove(selectedProduct._id); // Make sure this ID is correct
+      console.log('Sản phẩm đã được xóa thành công:', response);
+      resetForm();
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      console.error('Lỗi khi xóa sản phẩm:', error.response?.data || error.message);
+      setError('Có lỗi xảy ra khi xóa sản phẩm!');
+    }
+  };
+  
 
   return (
     <div className="product-form p-4 bg-white border ml-4 h-full flex flex-col">
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex-grow">
-        <div className="mb-4">
-          <label className="block mb-2">ID SP</label>
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">ID SP</label>
           <select
             name="idProduct"
             value={product.idProduct || ''}
             onChange={handleProductChange}
-            className="border py-2 px-3 w-full"
+            className="border py-1 px-2 w-full"
           >
             <option value="">Chọn sản phẩm</option>
             {warehouses.map((warehouse) => (
@@ -169,85 +203,86 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
             ))}
           </select>
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Tên sản phẩm</label>
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Tên sản phẩm</label>
           <input
             type="text"
             name="nameOfProduct"
             value={product.nameOfProduct || ''}
             onChange={handleChange}
-            className="border py-2 px-3 w-full"
+            className="border py-1 px-2 w-full"
             disabled
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Số lượng</label>
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Số lượng</label>
           <input
             type="number"
             name="quantity"
             value={product.quantity || 0}
             onChange={handleChange}
-            className="border py-2 px-3 w-full"
+            className="border py-1 px-2 w-full"
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Giá</label>
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Giá</label>
           <input
             type="text"
             name="price"
             value={product.price || ''}
             onChange={handleChange}
-            className="border py-2 px-3 w-full"
+            className="border py-1 px-2 w-full"
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Loại sản phẩm</label>
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Loại sản phẩm</label>
           <input
             type="text"
             name="typeProduct"
             value={product.typeProduct || ''}
             onChange={handleChange}
-            className="border py-2 px-3 w-full"
+            className="border py-1 px-2 w-full"
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Mô tả sản phẩm</label>
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Mô tả sản phẩm</label>
           <textarea
             name="description"
             value={product.description || ''}
             onChange={handleChange}
-            className="border py-2 px-3 w-full"
+            className="border py-1 px-2 w-full"
             rows="3"
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Trạng thái</label>
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Trạng thái</label>
           <select
             name="status"
             value={product.status || 'Available'}
             onChange={handleChange}
-            className="border py-2 px-3 w-full"
+            className="border py-1 px-2 w-full"
           >
             <option value="Available">Còn hàng</option>
             <option value="Not Available">Hết hàng</option>
           </select>
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Hình ảnh</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} className="border py-2 px-3 w-full" />
-          {imagePreview && <img src={imagePreview} alt="Hình ảnh xem trước" className="mt-2 w-32 h-32 object-cover" />}
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Hình ảnh</label>
+          <input type="file" accept="image/*" onChange={handleImageChange} className="border py-1 px-2 w-full" />
+          {imagePreview && <img src={imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover" />}
+          {uploading && <p className="text-gray-500">Đang tải ảnh lên...</p>}
         </div>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 mt-4">
           <button
             type="submit"
-            className="bg-yellow-500 text-white px-4 py-2 rounded"
+            className="bg-yellow-500 text-white px-3 py-1 text-sm rounded"
           >
             Thêm
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className={`bg-green-500 text-white px-4 py-2 rounded ${!product.idProduct ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-green-500 text-white px-3 py-1 text-sm rounded ${!product.idProduct ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={!product.idProduct}
           >
             Sửa
@@ -255,21 +290,21 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
           <button
             type="button"
             onClick={resetForm}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="bg-blue-500 text-white px-3 py-1 text-sm rounded"
           >
             Đặt lại
           </button>
           <button
             type="button"
             onClick={handleDelete}
-            className="bg-red-500 text-white px-4 py-2 rounded"
+            className="bg-red-500 text-white px-3 py-1 text-sm rounded"
           >
             Xóa
           </button>
         </div>
       </form>
     </div>
-  );
+  );  
 };
 
 export default ProductForm;

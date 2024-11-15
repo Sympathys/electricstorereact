@@ -15,6 +15,8 @@ import ProviderManagement from "./Pages/Admin/ProviderManagement/ProviderManagem
 import WarehouseManagement from "./Pages/Admin/WarehouseManagement/WarehouseManagement";
 import OrderManagement from "./Pages/Admin/OrderManagement/OrderManagement";
 import ImportManagement from "./Pages/Admin/ImportManagement/ImportManagement";
+import UserManagement from "./Pages/Admin/UserManagement/UserManagement";
+import AccountManagement from "./Pages/Admin/AccountManagement/AccountManagement";
 import CartPage from "./Pages/Cart/CartPage";
 import CheckoutPage from "./Pages/Checkout/CheckoutPage";
 import ProductListing from "./Pages/Product/ProductListing";
@@ -23,9 +25,11 @@ import OrderPending from "./Pages/Checkout/OderPending";
 import BankTransferQRCode from "./Pages/Checkout/BankTransferQRCode";
 import OrdersPage from "./Pages/Order/OrdersPage";
 import OrderDetailPage from "./Pages/Order/OrderDetailPage";
+import ResetPassword from "./Pages/Account/ResetPassword";
+import ChangePassword from "./Pages/Account/ChangePassword";
 
 function App() {
-  const role = JSON.parse(localStorage.getItem('user'))?.role;
+  const role = JSON.parse(localStorage.getItem('user'))?.data.role;
 
   return (
     <Router>
@@ -37,42 +41,62 @@ function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/ForgetPassword" element={<ForgetPassWord />} />
-
-          <Route path="/ProductManagement" element={<ProductManagement/>}/>
-          <Route path="/ProviderManagement" element={<ProviderManagement/>}/>
-          <Route path="/WarehouseManagement" element={<WarehouseManagement/>}/>
-          <Route path="/OrderManagement" element={<OrderManagement/>}/>
-          <Route path="/ImportManagement" element={<ImportManagement/>}/>
-
+          <Route path="/ResetPassword/:token" element={<ResetPassword/>} />
+          <Route path="/ChangePassword" element ={<ChangePassword/>} />
+          <Route 
+            path="/ProductManagement" 
+            element={
+              <ProtectedRoute role={role} allowedRoles={['admin']}>
+                <ProductManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/ProviderManagement" 
+            element={
+              <ProtectedRoute role={role} allowedRoles={['admin']}>
+                <ProviderManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/WarehouseManagement" 
+            element={
+              <ProtectedRoute role={role} allowedRoles={['admin']}>
+                <WarehouseManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/OrderManagement" 
+            element={
+              <ProtectedRoute role={role} allowedRoles={['admin']}>
+                <OrderManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/ImportManagement" 
+            element={
+              <ProtectedRoute role={role} allowedRoles={['admin']}>
+                <ImportManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/UserManagement" element={<UserManagement/>}/>
+          <Route path="/AccountManagement" element={<AccountManagement/>}/>
 
           <Route path ="/CartPage" element = {<CartPage/>}/>
           <Route path ="/CheckoutPage" element = {<CheckoutPage/>}/>
-
-
           <Route path = "/products/:type" element = {<ProductListing/>} />
           <Route path = "/info" element = {<InfoUser/>}/>
           <Route path = "/order-pending" element = {<OrderPending/>} />
           <Route path="/bank-transfer-qr-code" element={<BankTransferQRCode />} />
           <Route path="/orders-page" element = {<OrdersPage/>} />
           <Route path="/OrderDetail/:id" element = {<OrderDetailPage/>} />
-          {/* <Route 
-            path="/info" 
-            element={
-              <ProtectedRoute role={role} allowedRoles={['admin', 'user']}>
-                <InfoUser />
-              </ProtectedRoute>
-            }
-          /> */}
+
           <Route path="/product/:id" element={<ProductDetail/>}/>
 
-          {/* <Route 
-            path="/product/:id" 
-            element={
-              <ProtectedRoute role={role} allowedRoles={['user', 'admin']}>
-                <ProductDetail />
-              </ProtectedRoute>
-            }
-          /> */}
           <Route 
             path="/nav" 
             element={
@@ -82,7 +106,6 @@ function App() {
             }
           />
           
-          {/* Route cho trang 404 */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} /> {/* Định tuyến tất cả các URL không khớp */}
           <Route path="/verification-success" element={<VerificationSuccess/>} />
