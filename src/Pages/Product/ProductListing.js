@@ -67,9 +67,9 @@ const ProductListing = () => {
             {/* Product Grid */}
             <div className="grid grid-cols-4 gap-4">
                 {currentProducts.map((product) => (
-                    <div key={product._id} className="border rounded-lg p-4 shadow" onClick={() => handleProductDetailClick(product._id)} >
-                        <img src={product.image || "placeholder.jpg"} alt={product.nameOfProduct} className="w-full h-32 object-cover mb-2 rounded" />
-                        <h3 className="text-lg font-semibold">{product.name}</h3>
+                    <div key={product._id} className="border rounded-lg p-10 shadow" onClick={() => handleProductDetailClick(product._id)} >
+                        <img src={product.image ? `http://localhost:3000/${product.image.replace(/\\/g, '/')}` :"placeholder.jpg"} alt={product.nameOfProduct} className="w-full h-32 object-cover mb-2 rounded" />
+                        <h3 className="text-lg font-semibold">{product.nameOfProduct}</h3>
                         <p className="text-gray-700">{product.price} ₫</p>
                     </div>
                 ))}

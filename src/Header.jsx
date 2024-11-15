@@ -142,11 +142,18 @@ const Header = () => {
                   >
                     Thông tin cá nhân
                   </Link>
+                  
                   <Link
                     to="/settings"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Cài đặt
+                  </Link>
+                  <Link
+                    to="/orders-page"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Xem đơn đặt hàng
                   </Link>
                   <button
                     onClick={handleLogout}

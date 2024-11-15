@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"; // Sử dụng hook để điều hướng
 import clientAPI from "../../client-api/rest-client";
+import BannerImage from '../../images/BannerHomepages.png';
 
 const HomePage = () => {
   const [product, setProduct] = useState([]); // Khởi tạo với mảng rỗng
@@ -71,11 +72,12 @@ const HomePage = () => {
         {/* Phần banner */}
         <div className="w-3/4 ml-4">
           <div className="mb-4">
-            <img
-              src="https://via.placeholder.com/800x200"
-              alt="Banner"
-              className="rounded-lg"
-            />
+          <img
+            src={BannerImage}
+            alt="Banner"
+            className="rounded-lg"
+            style={{ width: '800px', height: '350px' }}
+          />
           </div>
 
             {/* Phần danh sách sản phẩm */}
