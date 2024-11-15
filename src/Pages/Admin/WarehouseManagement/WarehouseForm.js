@@ -101,75 +101,60 @@ const WarehouseForm = ({ selectedWarehouse, onRefresh }) => {
     <div className="warehouse-form p-4 bg-white border ml-4 h-full flex flex-col">
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex-grow">
-        <div className="mb-4">
-          <label className="block mb-2">ID Sản Phẩm</label>
-          <input
-            type="text"
-            name="idProduct"
-            value={warehouse.idProduct}
-            onChange={handleChange}
-            className="border py-2 px-3 w-full"
-            disabled={!!selectedWarehouse} // Prevent editing when selecting an existing warehouse
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Tên Sản Phẩm</label>
-          <input
-            type="text"
-            name="nameOfProduct"
-            value={warehouse.nameOfProduct}
-            onChange={handleChange}
-            className="border py-2 px-3 w-full"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Số Lượng</label>
-          <input
-            type="number"
-            name="quantity"
-            value={warehouse.quantity}
-            onChange={handleChange}
-            className="border py-2 px-3 w-full"
-            min="0"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Nhà Cung Cấp</label>
-          <select
-            name="idProvider"
-            value={warehouse.idProvider}
-            onChange={handleChange}
-            className="border py-2 px-3 w-full"
-            required
-          >
-            <option value="">Chọn Nhà Cung Cấp</option>
-            {providers.map(provider => (
-              <option key={provider.idProvider} value={provider.idProvider}>
-                {provider.idProvider} {/* Show provider ID */}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Tên Nhà Cung Cấp</label>
-          <input
-            type="text"
-            name="nameOfProvider"
-            value={warehouse.nameOfProvider}
-            onChange={handleChange}
-            className="border py-2 px-3 w-full"
-            disabled
-          />
-        </div>
-        <div className="flex justify-between">
-          <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">Thêm</button>
-          <button type="button" onClick={handleSubmit} className={`bg-green-500 text-white px-4 py-2 rounded ${!selectedWarehouse ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!selectedWarehouse}>Sửa</button>
-          <button type="button" onClick={handleDelete} className={`bg-red-500 text-white px-4 py-2 rounded ${!selectedWarehouse ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!selectedWarehouse}>Xóa</button>
-          <button type="button" onClick={() => { resetForm(); onRefresh(); }} className="bg-blue-500 text-white px-4 py-2 rounded">Làm mới</button>
+        {[
+          { label: 'ID Sản Phẩm', type: 'text', name: 'idProduct', disabled: !!selectedWarehouse },
+          { label: 'Tên Sản Phẩm', type: 'text', name: 'nameOfProduct' },
+          { label: 'Số Lượng', type: 'number', name: 'quantity', min: 0 },
+          {
+            label: 'Nhà Cung Cấp', 
+            type: 'select', 
+            name: 'idProvider', 
+            options: providers.map(provider => ({ value: provider.idProvider, label: provider.idProvider }))
+          },
+          { label: 'Tên Nhà Cung Cấp', type: 'text', name: 'nameOfProvider', disabled: true }
+        ].map(({ label, type, options, ...inputProps }, index) => (
+          <div key={index} className="mb-3">
+            <label className="block mb-1 text-sm">{label}</label>
+            {type === 'select' ? (
+              <select {...inputProps} className="border py-1 px-2 w-full" onChange={handleChange} value={warehouse[inputProps.name] || ''}>
+                <option value="">{`Chọn ${label.toLowerCase()}`}</option>
+                {options?.map((opt, idx) => (
+                  <option key={idx} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={type}
+                {...inputProps}
+                value={warehouse[inputProps.name] || ''}
+                onChange={handleChange}
+                className="border py-2 px-3 w-full"
+              />
+            )}
+          </div>
+        ))}
+  
+        <div className="flex space-x-4 mt-4">
+          {[
+            { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500' },
+            { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedWarehouse },
+            { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !selectedWarehouse },
+            { label: 'Làm mới', onClick: () => { resetForm(); onRefresh(); }, color: 'blue-500' }
+          ].map(({ label, onClick, color, disabled }, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={onClick}
+              className={`bg-${color} text-white px-3 py-1 text-sm rounded ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={disabled}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </form>
     </div>
-  );
+  );  
 };
 
 export default WarehouseForm;

@@ -11,9 +11,8 @@ const SideNav = () => {
     { path: '/ProviderManagement', label: 'Quản lý nhà cung cấp' },
     { path: '/WarehouseManagement', label: 'Quản lý kho' },
     { path: '/OrderManagement', label: 'Quản lý hóa đơn' },
-    { path: '/customer-management', label: 'Quản lý khách hàng' },
-    { path: '/employee-management', label: 'Quản lý nhân viên' },
-    { path: '/account-management', label: 'Quản lý tài khoản' },
+    { path: '/UserManagement', label: 'Quản lý thông tin tài khoản' },
+    { path: '/AccountManagement', label: 'Quản lý tài khoản' },
     { path: '/order-management', label: 'Quản lý đơn hàng' },
   ];
 

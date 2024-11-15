@@ -36,10 +36,10 @@ const ImportForm = ({ selectedImport, onRefresh }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === 'idProvider') {
-      const selectedProvider = providers.find(provider => provider.idProvider === value);
-      setImportData(prevData => ({
+      const selectedProvider = providers.find((provider) => provider.idProvider === value);
+      setImportData((prevData) => ({
         ...prevData,
         idProvider: value,
         nameOfProvider: selectedProvider ? selectedProvider.nameOfProvider : '' // Update nameOfProvider based on selected idProvider
@@ -56,20 +56,30 @@ const ImportForm = ({ selectedImport, onRefresh }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+      // Log the data before submitting to check values
+    console.log("Import Data to Submit:", importData);
+  
+    // Validation: Ensure required fields are filled
     if (!importData.idProduct || !importData.nameOfProduct || importData.quantity < 0 || importData.priceImport < 0 || !importData.idProvider) {
       setError('Please fill in all required fields!');
       return;
     }
-
+  
     try {
       let response;
-      if (selectedImport) {
-        response = await clientAPI.service('import').patch(selectedImport.idImport, importData);
+      // Remove idImport if it exists to prevent sending it in the API request
+      const importDataWithoutIdImport = { ...importData };
+      delete importDataWithoutIdImport.idImport; // Make sure no _id is included in the request
+  
+      // Handle create or update based on whether there's a selectedImport
+      if (selectedImport && selectedImport._id) {
+        response = await clientAPI.service('import').patch(selectedImport._id, importDataWithoutIdImport);
         console.log('Import updated successfully:', response);
       } else {
-        response = await clientAPI.service('import').create(importData);
+        response = await clientAPI.service('import').create(importDataWithoutIdImport); // Use data without _id
         console.log('New import created successfully:', response);
       }
+  
       resetForm();
       if (onRefresh) onRefresh();
     } catch (error) {
@@ -77,11 +87,14 @@ const ImportForm = ({ selectedImport, onRefresh }) => {
       setError('An error occurred while adding/updating the import!');
     }
   };
+  
+  
 
   const handleDelete = async () => {
-    if (!selectedImport) return;
+    if (!selectedImport || !selectedImport._id) return;
+
     try {
-      await clientAPI.service('import').remove(selectedImport.idImport);
+      await clientAPI.service('import').remove(selectedImport._id);
       console.log('Import deleted successfully');
       resetForm();
       if (onRefresh) onRefresh();
@@ -107,42 +120,42 @@ const ImportForm = ({ selectedImport, onRefresh }) => {
     <div className="import-form p-4 bg-white border ml-4 h-full flex flex-col">
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex-grow">
-        <div className="mb-4">
-          <label className="block mb-2">ID Sản Phẩm</label>
-          <input type="text" name="idProduct" value={importData.idProduct} onChange={handleChange} className="border py-2 px-3 w-full" required />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Tên Sản Phẩm</label>
-          <input type="text" name="nameOfProduct" value={importData.nameOfProduct} onChange={handleChange} className="border py-2 px-3 w-full" required />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Số Lượng</label>
-          <input type="number" name="quantity" value={importData.quantity} onChange={handleChange} className="border py-2 px-3 w-full" min="0" required />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Giá Nhập Khẩu</label>
-          <input type="number" name="priceImport" value={importData.priceImport} onChange={handleChange} className="border py-2 px-3 w-full" min="0" required />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Nhà Cung Cấp</label>
-          <select name="idProvider" value={importData.idProvider} onChange={handleChange} className="border py-2 px-3 w-full" required>
-            <option value="">Chọn Nhà Cung Cấp</option>
-            {providers.map(provider => (
-              <option key={provider.idProvider} value={provider.idProvider}>
-                {provider.idProvider}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Tên Nhà Cung Cấp</label>
-          <input type="text" name="nameOfProvider" value={importData.nameOfProvider} className="border py-2 px-3 w-full" disabled />
-        </div>
-        <div className="flex justify-between">
-          <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">Thêm</button>
-          <button type="button" onClick={handleSubmit} className={`bg-green-500 text-white px-4 py-2 rounded ${!selectedImport ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!selectedImport}>Sửa</button>
-          <button type="button" onClick={handleDelete} className={`bg-red-500 text-white px-4 py-2 rounded ${!selectedImport ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!selectedImport}>Xóa</button>
-          <button type="button" onClick={() => { resetForm(); if (onRefresh) onRefresh(); }} className="bg-blue-500 text-white px-4 py-2 rounded">Làm mới</button>
+        {[
+          { label: 'ID Sản Phẩm', type: 'text', name: 'idProduct', required: true },
+          { label: 'Tên Sản Phẩm', type: 'text', name: 'nameOfProduct', required: true },
+          { label: 'Số Lượng', type: 'number', name: 'quantity', min: 0, required: true },
+          { label: 'Giá Nhập Khẩu', type: 'number', name: 'priceImport', min: 0, required: true },
+          { label: 'Nhà Cung Cấp', type: 'select', name: 'idProvider', required: true, options: providers.map((provider) => ({ value: provider.idProvider, label: provider.idProvider })) },
+          { label: 'Tên Nhà Cung Cấp', type: 'text', name: 'nameOfProvider', disabled: true }
+        ].map(({ label, type, options, ...inputProps }, index) => (
+          <div key={index} className="mb-3">
+            <label className="block mb-1 text-sm">{label}</label>
+            {type === 'select' ? (
+              <select {...inputProps} className="border py-1 px-2 w-full" value={importData[inputProps.name] || ''} onChange={handleChange}>
+                <option value="">{`Chọn ${label.toLowerCase()}`}</option>
+                {options?.map((opt, idx) => (
+                  <option key={idx} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input type={type} {...inputProps} className="border py-1 px-2 w-full" onChange={handleChange} value={importData[inputProps.name] || ''} />
+            )}
+          </div>
+        ))}
+
+        <div className="flex space-x-4 mt-4">
+          {[
+            { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500' },
+            { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedImport || !selectedImport._id },
+            { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !selectedImport || !selectedImport._id },
+            { label: 'Làm mới', onClick: () => { resetForm(); if (onRefresh) onRefresh(); }, color: 'blue-500' }
+          ].map(({ label, onClick, color, disabled }, idx) => (
+            <button key={idx} type="button" onClick={onClick} className={`bg-${color} text-white px-3 py-1 text-sm rounded ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={disabled}>
+              {label}
+            </button>
+          ))}
         </div>
       </form>
     </div>

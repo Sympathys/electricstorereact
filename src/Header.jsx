@@ -14,7 +14,6 @@ const Header = () => {
   // Lấy thông tin người dùng từ localStorage khi component mount
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    
     if (storedUser && storedUser.data) {
       setUser({ username: storedUser.data.username });
     } else {
@@ -26,7 +25,7 @@ const Header = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await clientAPI.service('product').find(); // Gọi API để lấy tất cả sản phẩm
+        const response = await clientAPI.service("product").find(); // Gọi API để lấy tất cả sản phẩm
         setProducts(response); // Giả sử dữ liệu trả về là mảng các sản phẩm
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);
@@ -39,33 +38,27 @@ const Header = () => {
   // Lọc sản phẩm khi thay đổi search term hoặc danh sách sản phẩm
   useEffect(() => {
     if (searchTerm && Array.isArray(products.data)) {
-      // Duyệt qua danh sách sản phẩm và kiểm tra xem tên sản phẩm có chứa từ khóa tìm kiếm không
-      const results = [];
-      for (let i = 0; i < products.data.length; i++) {
-        const product = products.data[i];
-        if (product.nameOfProduct.toLowerCase().includes(searchTerm.toLowerCase())) {
-          results.push(product); // Nếu có thì thêm vào kết quả
-        }
-      }
+      const results = products.data.filter((product) =>
+        product.nameOfProduct.toLowerCase().includes(searchTerm.toLowerCase())
+      );
       setFilteredProducts(results);
     } else {
       setFilteredProducts([]); // Nếu không có từ khóa tìm kiếm thì không hiển thị kết quả
     }
   }, [searchTerm, products]);
- 
+
   // Xử lý thay đổi input tìm kiếm
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  // Xử lý đăng xuất s
+  // Xử lý đăng xuất
   const handleLogout = () => {
     const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
-    
     if (isConfirmed) {
       try {
-        localStorage.removeItem('user');
-        localStorage.removeItem('userToken');
+        localStorage.removeItem("user");
+        localStorage.removeItem("userToken");
         navigate(`/LogIn`);
       } catch (error) {
         console.error("Error during logout:", error);
@@ -75,7 +68,7 @@ const Header = () => {
 
   // Xử lý sự kiện nhấn vào giỏ hàng
   const handleCartClick = () => {
-    navigate('/CartPage');
+    navigate("/CartPage");
   };
 
   // Toggle dropdown visibility
@@ -86,14 +79,20 @@ const Header = () => {
   return (
     <header className="w-full bg-gray-100 border-b">
       <div className="flex items-center justify-between py-2 px-4 bg-white">
-      <div >
-        <Link to="/HomePage" className="flex items-center">
-          <img src="https://via.placeholder.com/50" alt="Logo" className="w-12 h-12" />
-          <div className="ml-2">
-            <span className="text-pink-500 text-lg font-bold">ONLINE E-STORE</span>
-          </div>
-        </Link>
-      </div>
+        <div>
+          <Link to="/HomePage" className="flex items-center">
+            <img
+              src="https://via.placeholder.com/50"
+              alt="Logo"
+              className="w-12 h-12"
+            />
+            <div className="ml-2">
+              <span className="text-pink-500 text-lg font-bold">
+                ONLINE E-STORE
+              </span>
+            </div>
+          </Link>
+        </div>
 
         <div className="flex items-center w-1/2 relative">
           <input
@@ -109,7 +108,11 @@ const Header = () => {
                 <li
                   key={product.id}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => navigate(`/product/${product._id}`)} // Navigate đến trang chi tiết sản phẩm
+                  onClick={() => {
+                    setSearchTerm(product.nameOfProduct); // Đặt tên sản phẩm vào thanh tìm kiếm
+                    setFilteredProducts([]); // Ẩn danh sách gợi ý
+                    navigate(`/product/${product._id}`); // Điều hướng đến trang chi tiết sản phẩm
+                  }}
                 >
                   {product.nameOfProduct}
                 </li>
@@ -119,7 +122,10 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-6">
-          <div className="flex items-center cursor-pointer" onClick={handleCartClick}>
+          <div
+            className="flex items-center cursor-pointer"
+            onClick={handleCartClick}
+          >
             <i className="fas fa-shopping-cart text-gray-600"></i>
             <span className="ml-1 text-gray-600">Giỏ hàng</span>
           </div>
@@ -133,7 +139,6 @@ const Header = () => {
                 <i className="fas fa-user-circle text-gray-600"></i>
                 <span className="ml-1 text-gray-600">{user.username}</span>
               </div>
-              {/* Dropdown menu cho người dùng */}
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                   <Link
@@ -142,7 +147,12 @@ const Header = () => {
                   >
                     Thông tin cá nhân
                   </Link>
-                  
+                  <Link
+                    to="/orders-page"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Xem đơn đặt hàng
+                  </Link>
                   <Link
                     to="/settings"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -150,10 +160,10 @@ const Header = () => {
                     Cài đặt
                   </Link>
                   <Link
-                    to="/orders-page"
+                    to="/ChangePassword"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
-                    Xem đơn đặt hàng
+                    Đổi mật khẩu
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -167,7 +177,9 @@ const Header = () => {
           ) : (
             <div className="flex items-center cursor-pointer">
               <i className="fas fa-user-circle text-gray-600"></i>
-              <Link to="/LogIn" className="ml-1 text-gray-600">Tài Khoản</Link>
+              <Link to="/LogIn" className="ml-1 text-gray-600">
+                Tài Khoản
+              </Link>
             </div>
           )}
         </div>

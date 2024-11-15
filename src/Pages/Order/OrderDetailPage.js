@@ -5,12 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 const OrderDetailPage = () => {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { orderId } = useParams();  // Lấy orderId từ URL
+    const orderId = useParams().id;  // Lấy orderId từ URL
     const navigate = useNavigate();
 
     const loadOrderDetails = async () => {
+        console.log(orderId);
         try {
-            const response = await clientAPI.service('order').get(orderId);
+            const response = await clientAPI.service('services/order').get(orderId);
             if (response.data) {
                 setOrder(response.data);
             } else {

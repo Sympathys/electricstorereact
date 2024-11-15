@@ -32,8 +32,11 @@ const ProductManagement = () => {
 
   return (
     <div className="flex h-screen">
-      <SideNav />
-      <div className="flex-grow p-4">
+      {/* Thu nhỏ thanh điều hướng bên trái */}
+      <div className="w-1/6 bg-gray-200 h-full">
+        <SideNav />
+      </div>
+      <div className="w-5/6 p-4 overflow-auto">
         {loading ? (
           <p>Đang tải sản phẩm...</p>
         ) : error ? (
