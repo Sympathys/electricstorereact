@@ -11,7 +11,7 @@ const OrderDetailPage = () => {
     const loadOrderDetails = async () => {
         console.log(orderId);
         try {
-            const response = await clientAPI.service('services/order').get(orderId);
+            const response = await clientAPI.service('services/order').get(orderId); 
             if (response.data) {
                 setOrder(response.data);
             } else {
