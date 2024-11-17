@@ -65,7 +65,6 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
   
     setError('');
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -175,8 +174,12 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
             onChange={handleChange}
             className="border py-1 px-2 w-full"
           >
-            <option value="Chờ thanh toán">Chờ thanh toán</option>
-            <option value="Đã thanh toán">Đã thanh toán</option>
+            <option value="Chờ xác nhận">Chờ xác nhận</option>
+            <option value="Chờ lấy hàng">Chờ lấy hàng</option>
+            <option value="Đang vận chuyển">Đang vận chuyển</option>
+            <option value="Đang giao">Đang giao</option>
+            <option value="Đã giao">Đã giao</option>
+            <option value="Đã hủy">Đã hủy</option>
           </select>
         </div>
 
