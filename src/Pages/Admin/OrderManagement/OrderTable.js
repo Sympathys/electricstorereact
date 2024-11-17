@@ -13,13 +13,19 @@ import {
   TextField,
   MenuItem,
   TablePagination,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
 } from '@mui/material';
 
-const OrderTable = ({ orders, onOrderSelect, selectedOrderDetails = [] }) => {  // Default value assigned here
+const OrderTable = ({ orders, onOrderSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchBy, setSearchBy] = useState('nameOfCustomer');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [selectedOrder, setSelectedOrder] = useState(null);  // Store the selected order
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -38,19 +44,25 @@ const OrderTable = ({ orders, onOrderSelect, selectedOrderDetails = [] }) => {  
     setPage(0);
   };
 
-  // Filter orders based on search term and criteria
-  const filteredOrders = orders.filter((order) =>
-    order[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleRowClick = (orderId) => {
     onOrderSelect(orderId);
   };
 
+  const handleRowDoubleClick = (order) => {
+    setSelectedOrder(order);  // Set the selected order
+  };
+
+  const handleCloseModal = () => {
+    setSelectedOrder(null);  // Close the modal
+  };
+
+  const filteredOrders = orders.filter((order) =>
+    order[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Box sx={{ display: 'flex', gap: 3 }}>
-      {/* Orders Table */}
-      <Paper sx={{ width: '60%', overflow: 'hidden' }}>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
           Danh sách đơn hàng
         </Typography>
@@ -82,11 +94,15 @@ const OrderTable = ({ orders, onOrderSelect, selectedOrderDetails = [] }) => {  
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>ID Khách Hàng</TableCell>
                 <TableCell>Tên Khách Hàng</TableCell>
+                <TableCell>Số Điện Thoại</TableCell>
+                <TableCell>Địa Chỉ</TableCell>
                 <TableCell>Ngày Đặt Hàng</TableCell>
                 <TableCell>Tổng Tiền</TableCell>
-                <TableCell>Trạng Thái</TableCell>
                 <TableCell>Phương Thức Thanh Toán</TableCell>
+                <TableCell>Trạng Thái Thanh Toán</TableCell>
+                <TableCell>Trạng Thái</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -96,13 +112,18 @@ const OrderTable = ({ orders, onOrderSelect, selectedOrderDetails = [] }) => {  
                   <TableRow
                     key={order._id}
                     onClick={() => handleRowClick(order._id)}
+                    onDoubleClick={() => handleRowDoubleClick(order)}
                     sx={{ cursor: 'pointer' }}
                   >
+                    <TableCell>{order.idCustomer}</TableCell>
                     <TableCell>{order.nameOfCustomer}</TableCell>
+                    <TableCell>{order.phone}</TableCell>
+                    <TableCell>{order.address}</TableCell>
                     <TableCell>{new Date(order.dateOrder).toLocaleDateString()}</TableCell>
-                    <TableCell>{order.totalPrice.toLocaleString()} VNĐ</TableCell>
-                    <TableCell>{order.status}</TableCell>
+                    <TableCell>{order.totalPrice?.toLocaleString()} VNĐ</TableCell>
                     <TableCell>{order.payment_method}</TableCell>
+                    <TableCell>{order.isPayment ? 'Đã thanh toán' : 'Chưa thanh toán'}</TableCell>
+                    <TableCell>{order.status}</TableCell>
                   </TableRow>
                 ))}
             </TableBody>
@@ -120,49 +141,51 @@ const OrderTable = ({ orders, onOrderSelect, selectedOrderDetails = [] }) => {  
         />
       </Paper>
 
-      {/* Selected Order Details Table */}
-      <Paper sx={{ width: '40%', overflow: 'hidden' }}>
-        <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-          Chi tiết đơn hàng
-        </Typography>
-
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Tên Sản Phẩm</TableCell>
-                <TableCell>Số Lượng</TableCell>
-                <TableCell>Giá</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {selectedOrderDetails.length > 0 ? (
-                selectedOrderDetails.map((product) => (
-                  <TableRow key={product._id}>
-                    <TableCell>{product.nameOfProduct}</TableCell>
-                    <TableCell>{product.quantity}</TableCell>
-                    <TableCell>{product.price.toLocaleString()} VNĐ</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    Chưa có sản phẩm nào được chọn.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+      {/* Modal to show selected order details */}
+      <Dialog open={selectedOrder !== null} onClose={handleCloseModal}>
+        <DialogTitle>
+          Thông Tin Đơn Hàng
+          <Button onClick={handleCloseModal} sx={{ position: 'absolute', right: 8, top: 8 }}>
+            X
+          </Button>
+        </DialogTitle>
+        <DialogContent>
+          {selectedOrder && (
+            <>
+              <Typography variant="h6">Thông Tin Sản Phẩm</Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Tên Sản Phẩm</TableCell>
+                      <TableCell>Số Lượng</TableCell>
+                      <TableCell>Đơn Giá</TableCell>
+                      <TableCell>Tổng Giá</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {selectedOrder.products.map((product, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{product.nameOfProduct}</TableCell>
+                        <TableCell>{product.quantity}</TableCell>
+                        <TableCell>{product.price?.toLocaleString()} VNĐ</TableCell>
+                        <TableCell>{(product.quantity * product.price)?.toLocaleString()} VNĐ</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Đóng
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
-};
-
-OrderTable.propTypes = {
-  orders: PropTypes.array.isRequired,
-  onOrderSelect: PropTypes.func.isRequired,
-  selectedOrderDetails: PropTypes.array, // Not required anymore since we handle default values in params
 };
 
 export default OrderTable;
