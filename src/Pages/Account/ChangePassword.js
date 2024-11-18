@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import clientAPI from "../../client-api/rest-client";
+import { useNavigate } from "react-router-dom";
 
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
@@ -7,6 +8,7 @@ const ChangePassword = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,14 +24,25 @@ const ChangePassword = () => {
     try {
       // Gửi yêu cầu đến server để thay đổi mật khẩu
       const response = await clientAPI
-        .service("services/change-password")
-        .create({ oldPassword, newPassword });
+        .service("services")
+        .patch("change-password", { oldPassword, newPassword });
 
       if (response.success) {
         setSuccessMessage("Mật khẩu của bạn đã được thay đổi thành công.");
+
+        // Reset các giá trị input
         setOldPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
+
+        // Xóa thông tin người dùng và token khỏi localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("userToken");
+
+        // Chờ 2 giây trước khi chuyển tới trang login
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       } else {
         setErrorMessage("Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin và thử lại.");
       }

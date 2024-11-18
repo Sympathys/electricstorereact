@@ -128,7 +128,7 @@ const CartPage = () => {
                         <div key={product._id} className="flex items-center justify-between border-b border-gray-200 py-4">
                             <img
                                 className="w-20 h-20 object-cover rounded"
-                                src={product.image ? `http://localhost:3000/${product.image.replace(/\\/g, '/')}` : "https://via.placeholder.com/150"}
+                                src={product.image ? product.image : "https://via.placeholder.com/150"}
                                 alt={product.nameOfProduct}
                                 onClick={() => handleProductClick(product.idProduct)}
                             />

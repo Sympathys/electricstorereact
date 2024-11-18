@@ -50,6 +50,7 @@ const ProductDetail = () => {
           idProduct: productDetail._id,
           quantity: 1,
           nameOfProduct: productDetail.nameOfProduct,
+          image: productDetail.image,
           price: productDetail.price,
         });
         console.log("Product added to cart successfully:", response.data);
@@ -140,46 +141,7 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Footer Section */}
-      <div className="bg-pink-500 text-white p-6 mt-6 rounded-lg">
-        <div className="flex justify-between text-center">
-          <div className="flex-1 mx-4">
-            <h4 className="font-bold text-lg mb-2">VỀ CHÚNG TÔI</h4>
-            <div className="flex flex-col items-center mt-2">
-              <a href="https://www.facebook.com/profile.php?id=61553397810748" target="_blank" rel="noopener noreferrer">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
-                  alt="Facebook Logo"
-                  className="w-8 h-8 mb-2"
-                />
-              </a>
-              <a href="https://www.youtube.com/@ThanhHung_Le" target="_blank" rel="noopener noreferrer">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png"
-                  alt="YouTube Logo"
-                  className="w-8 h-8 mb-2"
-                />
-              </a>
-              <a href="https://www.instagram.com/thanh.hungggg_/" target="_blank" rel="noopener noreferrer">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
-                  alt="Instagram Logo"
-                  className="w-8 h-8"
-                />
-              </a>
-            </div>
-          </div>
-          <div className="flex-1 mx-4">
-            <h4 className="font-bold text-lg mb-2">HỖ TRỢ KHÁCH HÀNG</h4>
-            <p className="text-white">Hướng dẫn mua hàng</p>
-            <p className="text-white">Hướng dẫn Thanh toán</p>
-          </div>
-          <div className="flex-1 mx-4">
-            <h4 className="font-bold text-lg mb-2">Hệ thống cửa hàng</h4>
-            <p className="text-white">Tìm kiếm cửa hàng gần bạn.</p>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };

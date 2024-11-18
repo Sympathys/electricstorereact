@@ -53,7 +53,7 @@ const ProductListing = () => {
 
     return (
         <div className="max-w-screen-lg mx-auto bg-white p-4">
-            <h1 className="text-2xl font-bold mb-4">Product Listing</h1>
+            <h1 className="text-2xl font-bold mb-4">Danh sách sản phẩm</h1>
             
             {/* Sorting Dropdown */}
             <div className="flex justify-end mb-4">

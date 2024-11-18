@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clientAPI from "./client-api/rest-client";
+import { monitorToken } from "./tokenManager";  // Import hàm monitorToken từ tokenManager.js
 
 const Header = () => {
   const [user, setUser] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // State cho input tìm kiếm
-  const [filteredProducts, setFilteredProducts] = useState([]); // State cho sản phẩm đã lọc
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State quản lý hiển thị dropdown
-  const [products, setProducts] = useState([]); // State lưu danh sách sản phẩm
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const dropdownRef = useRef(null); // Tham chiếu đến dropdown
   const navigate = useNavigate();
-  const location = useLocation(); // Theo dõi thay đổi location để cập nhật thông tin người dùng
+  const location = useLocation();
 
-  // Lấy thông tin người dùng từ localStorage khi component mount
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser && storedUser.data) {
@@ -21,21 +22,19 @@ const Header = () => {
     }
   }, [location]);
 
-  // Lấy dữ liệu sản phẩm từ clientAPI khi component mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await clientAPI.service("product").find(); // Gọi API để lấy tất cả sản phẩm
-        setProducts(response); // Giả sử dữ liệu trả về là mảng các sản phẩm
+        const response = await clientAPI.service("product").find();
+        setProducts(response);
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);
       }
     };
 
-    fetchProducts(); // Gọi API để lấy sản phẩm
-  }, []); // Chỉ gọi khi component mount
+    fetchProducts();
+  }, []);
 
-  // Lọc sản phẩm khi thay đổi search term hoặc danh sách sản phẩm
   useEffect(() => {
     if (searchTerm && Array.isArray(products.data)) {
       const results = products.data.filter((product) =>
@@ -43,16 +42,14 @@ const Header = () => {
       );
       setFilteredProducts(results);
     } else {
-      setFilteredProducts([]); // Nếu không có từ khóa tìm kiếm thì không hiển thị kết quả
+      setFilteredProducts([]);
     }
   }, [searchTerm, products]);
 
-  // Xử lý thay đổi input tìm kiếm
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  // Xử lý đăng xuất
   const handleLogout = () => {
     const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
     if (isConfirmed) {
@@ -66,16 +63,30 @@ const Header = () => {
     }
   };
 
-  // Xử lý sự kiện nhấn vào giỏ hàng
   const handleCartClick = () => {
     navigate("/CartPage");
   };
 
-  // Toggle dropdown visibility
   const toggleDropdown = () => {
-    setIsDropdownOpen((prevState) => !prevState); // Toggle dropdown
+    setIsDropdownOpen((prevState) => !prevState);
   };
 
+  // Đóng dropdown khi nhấn ra ngoài
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
   return (
     <header className="w-full bg-gray-100 border-b">
       <div className="flex items-center justify-between py-2 px-4 bg-white">
@@ -109,9 +120,9 @@ const Header = () => {
                   key={product.id}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    setSearchTerm(product.nameOfProduct); // Đặt tên sản phẩm vào thanh tìm kiếm
-                    setFilteredProducts([]); // Ẩn danh sách gợi ý
-                    navigate(`/product/${product._id}`); // Điều hướng đến trang chi tiết sản phẩm
+                    setSearchTerm(product.nameOfProduct);
+                    setFilteredProducts([]);
+                    navigate(`/product/${product._id}`);
                   }}
                 >
                   {product.nameOfProduct}
@@ -131,10 +142,10 @@ const Header = () => {
           </div>
 
           {user ? (
-            <div className="relative">
+            <div ref={dropdownRef} className="relative">
               <div
                 className="flex items-center cursor-pointer"
-                onClick={toggleDropdown} // Toggle dropdown khi nhấn vào
+                onClick={toggleDropdown}
               >
                 <i className="fas fa-user-circle text-gray-600"></i>
                 <span className="ml-1 text-gray-600">{user.username}</span>
@@ -144,29 +155,36 @@ const Header = () => {
                   <Link
                     to="/info"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
                   >
                     Thông tin cá nhân
                   </Link>
                   <Link
                     to="/orders-page"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
                   >
                     Xem đơn đặt hàng
                   </Link>
                   <Link
                     to="/settings"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
                   >
                     Cài đặt
                   </Link>
                   <Link
                     to="/ChangePassword"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
                   >
                     Đổi mật khẩu
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      setIsDropdownOpen(false); // Đóng dropdown
+                    }}
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Đăng xuất
@@ -195,7 +213,7 @@ const Header = () => {
               Sản phẩm
             </a>
             <a href="#" className="hover:underline">
-              Giới thiệu
+              Sản phẩm
             </a>
           </nav>
           <div className="flex items-center space-x-4">
