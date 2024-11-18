@@ -86,7 +86,7 @@ const OrderDetailPage = () => {
                 )}
                 <div className="mt-6">
                     <button
-                        onClick={() => navigate("/orders")}
+                        onClick={() => navigate("/orders-page")}
                         className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-600"
                     >
                         Quay lại danh sách đơn hàng

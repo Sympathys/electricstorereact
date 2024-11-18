@@ -9,7 +9,7 @@ const CheckoutPage = () => {
     const [name, setName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [shippingAddress, setShippingAddress] = useState("");
-    const [paymentMethod, setPaymentMethod] = useState("creditCard");
+    const [paymentMethod, setPaymentMethod] = useState("Bank");
 
     const handleNameChange = (e) => setName(e.target.value);
     const handlePhoneNumberChange = (e) => setPhoneNumber(e.target.value);
@@ -98,7 +98,6 @@ const CheckoutPage = () => {
                     onChange={handlePaymentChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                 >
-                    <option value="creditCard">Thẻ tín dụng</option>
                     <option value="Bank">Chuyển khoản ngân hàng</option>
                     <option value="Cod">Thanh toán khi nhận hàng (COD)</option>
                 </select>

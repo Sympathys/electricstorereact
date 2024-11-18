@@ -14,7 +14,7 @@ const ForgetPassWord = () => {
       // Send request to the server to initiate the forgot-password process
       const response = await clientAPI.service('services/forgot-password').create({email});
 
-      if (response.success) {
+      if (response.status==="success") {
         setSuccessMessage("Một email khôi phục mật khẩu đã được gửi đến hòm thư của bạn.");
       } else {
         setErrorMessage("Có lỗi xảy ra. Vui lòng kiểm tra lại email và thử lại.");

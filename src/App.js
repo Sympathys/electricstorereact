@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LogIn from './Pages/Account/LogIn';
 import SignUp from "./Pages/Account/SignUp";
 import Header from "./Header";
+import Footer from "./Footer";
 import HomePage from "./Pages/HomePage/HomePage";
 import ForgetPassWord from "./Pages/Account/ForgetPassword";
 import ProductDetail from "./Pages/Product/ProductDetail";
@@ -46,7 +47,7 @@ function App() {
           <Route 
             path="/ProductManagement" 
             element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
+              <ProtectedRoute role={role} allowedRoles={["admin"]}>
                 <ProductManagement />
               </ProtectedRoute>
             }
@@ -54,7 +55,7 @@ function App() {
           <Route 
             path="/ProviderManagement" 
             element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
+              <ProtectedRoute role={role} allowedRoles={["admin"]}>
                 <ProviderManagement />
               </ProtectedRoute>
             }
@@ -62,7 +63,7 @@ function App() {
           <Route 
             path="/WarehouseManagement" 
             element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
+              <ProtectedRoute role={role} allowedRoles={["admin"]}>
                 <WarehouseManagement />
               </ProtectedRoute>
             }
@@ -70,7 +71,7 @@ function App() {
           <Route 
             path="/OrderManagement" 
             element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
+              <ProtectedRoute role={role} allowedRoles={["admin"]}>
                 <OrderManagement />
               </ProtectedRoute>
             }
@@ -78,7 +79,7 @@ function App() {
           <Route 
             path="/ImportManagement" 
             element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
+              <ProtectedRoute role={role} allowedRoles={["admin"]}>
                 <ImportManagement />
               </ProtectedRoute>
             }
@@ -100,7 +101,7 @@ function App() {
           <Route 
             path="/nav" 
             element={
-              <ProtectedRoute role={role} allowedRoles={['admin']}>
+              <ProtectedRoute role={role} allowedRoles={["admin"]}>
                 <SideNav />
               </ProtectedRoute>
             }
@@ -110,6 +111,7 @@ function App() {
           <Route path="*" element={<NotFound />} /> {/* Định tuyến tất cả các URL không khớp */}
           <Route path="/verification-success" element={<VerificationSuccess/>} />
         </Routes>
+        <Footer/>
       </div>
     </Router>
   );
