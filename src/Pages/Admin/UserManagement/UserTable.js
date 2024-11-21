@@ -56,7 +56,7 @@ const UserTable = ({ onUserSelect }) => {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-        User List
+        Danh sách thông tin tài khoản
       </Typography>
       
       {error && (

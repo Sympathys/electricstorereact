@@ -77,16 +77,16 @@ const UserForm = ({ selectedUser, onRefresh }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    
     // Log the data before submitting to check values
     console.log("User Data to Submit:", user);
-  
-    // Validation: Ensure required fields are filled (check only fields that are actually required)
-    if (!user.name || !user.email || !user.phone || !user.gender) {
+    
+    // Validation: Ensure required fields are filled (but allow optional fields)
+    if (!user.name || !user.email) {
       setError('Please fill in all required fields!');
       return;
     }
-  
+    
     try {
       let response;
       // Remove _id if it exists to prevent sending it in the API request
@@ -111,6 +111,7 @@ const UserForm = ({ selectedUser, onRefresh }) => {
       setError('An error occurred while adding/updating the user!');
     }
   };
+  
 
   const resetForm = () => {
     setUser({

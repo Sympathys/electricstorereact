@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import clientAPI from '../../../client-api/rest-client';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Typography, TablePagination, Box, TextField, MenuItem
+  Paper, Typography, TablePagination, Box, TextField, MenuItem, Chip
 } from '@mui/material';
 
 const AccountTable = ({ onAccountSelect }) => {
@@ -37,7 +37,7 @@ const AccountTable = ({ onAccountSelect }) => {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-        Account List
+        DAnh sách thông tin tài khoản
       </Typography>
 
       {loading ? (
@@ -71,36 +71,41 @@ const AccountTable = ({ onAccountSelect }) => {
           </Box>
 
           <TableContainer sx={{ maxHeight: 440, overflowY: 'auto' }}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell> {/* New Column Header */}
-                <TableCell>Tên</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Quyền</TableCell>
-                <TableCell>trạng thái</TableCell>
-                <TableCell>Mật khẩu</TableCell> 
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredAccounts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((account) => (
-                <TableRow
-                  key={account._id}
-                  hover
-                  onClick={() => onAccountSelect(account)}
-                  style={{ cursor: 'pointer' }} 
-                >
-                  <TableCell>{account._id}</TableCell> {/* Display _id */}
-                  <TableCell>{account.username}</TableCell>
-                  <TableCell>{account.email}</TableCell>
-                  <TableCell>{account.role}</TableCell>
-                  <TableCell>{account.isActive ? 'Active' : 'Inactive'}</TableCell>
-                  <TableCell>{'******'}</TableCell> {/* Mask password */}
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Tên</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Quyền</TableCell>
+                  <TableCell>Trạng thái</TableCell>
+                  <TableCell>Mật khẩu</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
+              </TableHead>
+              <TableBody>
+                {filteredAccounts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((account) => (
+                  <TableRow
+                    key={account._id}
+                    hover
+                    onClick={() => onAccountSelect(account)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <TableCell>{account._id}</TableCell>
+                    <TableCell>{account.username}</TableCell>
+                    <TableCell>{account.email}</TableCell>
+                    <TableCell>{account.role}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={account.isActive ? 'Active' : 'Inactive'}
+                        color={account.isActive ? 'success' : 'error'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>{'******'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </TableContainer>
 
           <TablePagination
