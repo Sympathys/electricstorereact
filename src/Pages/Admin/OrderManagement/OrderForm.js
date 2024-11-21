@@ -133,29 +133,30 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex-grow">
         {[ 
-          { label: 'Customer Name', type: 'text', name: 'nameCustomer' },
-          { label: 'Phone', type: 'text', name: 'phone' },
-          { label: 'Address', type: 'text', name: 'address' },
-          { label: 'Order Date', type: 'date', name: 'dateOrder' },
-          { label: 'Received Date', type: 'date', name: 'dateReceived' },
-          { label: 'Total Price', type: 'number', name: 'totalPrice' },
+          { label: 'Tên Khách hàng', type: 'text', name: 'nameCustomer', required: true },
+          { label: 'Số điện thoại', type: 'text', name: 'phone', required: true },
+          { label: 'Đìa chỉ', type: 'text', name: 'address', required: true },
+          { label: 'Ngày đặt', type: 'date', name: 'dateOrder', required: true },
+          { label: 'Ngày nhận', type: 'date', name: 'dateReceived' },
+          { label: 'Tổng tiền', type: 'number', name: 'totalPrice', required: true },
         ].map(({ label, type, ...inputProps }, index) => (
           <div key={index} className="mb-3">
-            <label className="block mb-1 text-sm">{label}</label>
+            <label className="block mb-1 text-sm font-medium">{label}</label>
             <input
               type={type}
               {...inputProps}
               value={order[inputProps.name] || ''}
               onChange={handleChange}
-              className="border py-1 px-2 w-full"
+              className="border py-1 px-2 w-full text-sm rounded-md"
             />
           </div>
         ))}
-
+  
+        {/* Payment Method Dropdown */}
         <div className="mb-3">
           <label className="block mb-1 text-sm">Payment Method</label>
           <select
-            name="payment_method"
+            name="Phương thức thanh toán"
             value={order.payment_method}
             onChange={handleChange}
             className="border py-1 px-2 w-full"
@@ -165,9 +166,10 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
             <option value="COD">COD</option>
           </select>
         </div>
-
+  
+        {/* Order Status Dropdown */}
         <div className="mb-3">
-          <label className="block mb-1 text-sm">Order Status</label>
+          <label className="block mb-1 text-sm">Trạng thái thanh toán</label>
           <select
             name="status"
             value={order.status}
@@ -182,7 +184,8 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
             <option value="Đã hủy">Đã hủy</option>
           </select>
         </div>
-
+  
+        {/* Action Buttons */}
         <div className="flex space-x-4 mt-4">
           {[ 
             { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500', disabled: false },
@@ -205,6 +208,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
       </form>
     </div>
   );
+  
 };
 
 export default OrderForm;

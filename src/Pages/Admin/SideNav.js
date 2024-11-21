@@ -1,8 +1,9 @@
 // src/Pages/ProductManagement/SideNav.js
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const SideNav = () => {
+  const [isOpen, setIsOpen] = useState(true); // state to track if the sidebar is open
   const location = useLocation();
 
   const routes = [
@@ -13,11 +14,21 @@ const SideNav = () => {
     { path: '/OrderManagement', label: 'Quản lý hóa đơn' },
     { path: '/UserManagement', label: 'Quản lý thông tin tài khoản' },
     { path: '/AccountManagement', label: 'Quản lý tài khoản' },
-    { path: '/order-management', label: 'Quản lý đơn hàng' },
   ];
 
+  const toggleSidebar = () => {
+    setIsOpen(prevState => !prevState); // toggle the sidebar open/close state
+  };
+
   return (
-    <div className="bg-white border-r h-screen shadow-md">
+  <div className={`bg-white border-r h-screen shadow-md ${isOpen ? 'w-80' : 'w-10'} relative`}>
+    <button
+      onClick={toggleSidebar}
+      className="absolute top-250 right-0 bg-gray-200 p-1 rounded-full hover:bg-gray-300"
+    >
+      {isOpen ? '<' : '>'}
+    </button>
+    {isOpen && (
       <ul className="flex flex-col p-4">
         {routes.map(route => (
           <li
@@ -34,7 +45,8 @@ const SideNav = () => {
           </li>
         ))}
       </ul>
-    </div>
+    )}
+</div>
   );
 };
 

@@ -5,10 +5,15 @@ import WarehouseForm from './WarehouseForm';
 import clientAPI from '../../../client-api/rest-client';
 
 const WarehouseManagement = () => {
+  const [isOpen, setIsOpen] = useState(true); // Sidebar toggle state
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const toggleSidebar = () => {
+    setIsOpen((prevState) => !prevState);
+  };
 
   const refreshWarehouses = async () => {
     setLoading(true);
@@ -31,18 +36,18 @@ const WarehouseManagement = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/5 bg-gray-200 h-full">
-        <SideNav />
-      </div>
-      <div className="w-4/5 p-4 overflow-auto">
+      <SideNav isOpen={isOpen} toggleSidebar={toggleSidebar} />
+      <div
+        className={`flex-1 h-full overflow-auto px-2 ${isOpen ? 'ml-1/5' : 'ml-1/6'}`}
+      >
         {loading ? (
           <p>Loading warehouses...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
           <div className="flex flex-col md:flex-row gap-4">
-            <WarehouseTable warehouses={warehouses} onWarehouseSelect={setSelectedWarehouse} />
-            <WarehouseForm selectedWarehouse={selectedWarehouse} onRefresh={refreshWarehouses} />
+            <WarehouseTable warehouses={warehouses}onWarehouseSelect={setSelectedWarehouse}/>
+            <WarehouseForm selectedWarehouse={selectedWarehouse}onRefresh={refreshWarehouses}/>
           </div>
         )}
       </div>

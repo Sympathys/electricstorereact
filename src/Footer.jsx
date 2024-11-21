@@ -7,7 +7,7 @@ const Footer = () => {
         {/* Về Chúng Tôi */}
         <div className="flex-1 mx-4">
           <h4 className="font-bold text-lg mb-2">VỀ CHÚNG TÔI</h4>
-          <div className="flex flex-col items-center mt-2">
+          <div className="flex flex-row justify-center gap-4 mt-2"> {/* Change to flex-row and added gap for spacing */}
             <a
               href="https://www.facebook.com/profile.php?id=61553397810748"
               target="_blank"
@@ -16,7 +16,7 @@ const Footer = () => {
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
                 alt="Facebook Logo"
-                className="w-8 h-8 mb-2"
+                className="w-8 h-8"
               />
             </a>
             <a
@@ -27,7 +27,7 @@ const Footer = () => {
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png"
                 alt="YouTube Logo"
-                className="w-8 h-8 mb-2"
+                className="w-8 h-8"
               />
             </a>
             <a
@@ -43,7 +43,6 @@ const Footer = () => {
             </a>
           </div>
         </div>
-
         {/* Hỗ trợ khách hàng */}
         <div className="flex-1 mx-4">
           <h4 className="font-bold text-lg mb-2">HỖ TRỢ KHÁCH HÀNG</h4>

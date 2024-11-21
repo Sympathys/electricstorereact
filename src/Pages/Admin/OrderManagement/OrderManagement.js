@@ -5,10 +5,15 @@ import OrderForm from './OrderForm';
 import clientAPI from '../../../client-api/rest-client';
 
 const OrderManagement = () => {
+  const [isOpen, setIsOpen] = useState(true); // Sidebar toggle state
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const toggleSidebar = () => {
+    setIsOpen((prevState) => !prevState);
+  };
 
   const refreshOrders = async () => {
     setLoading(true);
@@ -26,10 +31,9 @@ const OrderManagement = () => {
   };
 
   const handleOrderSelect = (orderId) => {
-    const order = orders.find(order => order._id === orderId); // Find order by ID
+    const order = orders.find((order) => order._id === orderId); // Find order by ID
     setSelectedOrder(order);
   };
-  
 
   useEffect(() => {
     refreshOrders();
@@ -37,10 +41,10 @@ const OrderManagement = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/5 bg-gray-200 h-full">
-        <SideNav />
-      </div>
-      <div className="w-4/5 p-4 overflow-auto">
+      <SideNav isOpen={isOpen} toggleSidebar={toggleSidebar} />
+      <div
+        className={`flex-1 h-full overflow-auto px-2 ${isOpen ? 'ml-1/5' : 'ml-1/6'}`}
+      >
         {loading ? (
           <p>Loading orders...</p>
         ) : error ? (
@@ -48,10 +52,7 @@ const OrderManagement = () => {
         ) : (
           <div className="flex flex-col md:flex-row gap-4">
             <OrderTable orders={orders} onOrderSelect={handleOrderSelect} />
-            <OrderForm 
-              selectedOrder={selectedOrder} 
-              onRefresh={refreshOrders} 
-            />
+            <OrderForm selectedOrder={selectedOrder} onRefresh={refreshOrders} />
           </div>
         )}
       </div>

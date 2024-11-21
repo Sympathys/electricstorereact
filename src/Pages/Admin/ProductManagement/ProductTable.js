@@ -8,9 +8,11 @@ import {
 const ProductTable = ({ onProductSelect }) => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchBy, setSearchBy] = useState('nameOfProduct');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -24,9 +26,13 @@ const ProductTable = ({ onProductSelect }) => {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter(product =>
-    product[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const matchesSearchTerm = product[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPriceRange = 
+      (!minPrice || product.price >= minPrice) && 
+      (!maxPrice || product.price <= maxPrice);
+    return matchesSearchTerm && matchesPriceRange;
+  });
 
   const formatPrice = (price) => new Intl.NumberFormat('vi-VN', {
     style: 'currency', currency: 'VND'
@@ -61,7 +67,34 @@ const ProductTable = ({ onProductSelect }) => {
         >
           <MenuItem value="nameOfProduct">Tên sản phẩm</MenuItem>
           <MenuItem value="typeProduct">Loại sản phẩm</MenuItem>
+          <MenuItem value="price">Giá</MenuItem>
+          <MenuItem value="idProduct">Mã sản phẩm</MenuItem> {/* Added product code option */}
+          <MenuItem value="status">Trạng thái</MenuItem> {/* Added status option */}
         </TextField>
+
+        {/* Price Range Inputs */}
+        {searchBy === 'price' && (
+          <>
+            <TextField
+              label="Giá tối thiểu"
+              variant="outlined"
+              size="small"
+              type="number"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              sx={{ width: 180 }}
+            />
+            <TextField
+              label="Giá tối đa"
+              variant="outlined"
+              size="small"
+              type="number"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              sx={{ width: 180 }}
+            />
+          </>
+        )}
       </Box>
 
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -105,6 +138,7 @@ const ProductTable = ({ onProductSelect }) => {
           </TableBody>
         </Table>
       </TableContainer>
+
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"

@@ -1,4 +1,3 @@
-// src/Pages/ProductManagement/ProductManagement.js
 import React, { useState, useEffect } from 'react';
 import SideNav from '../SideNav';
 import ProductTable from './ProductTable';
@@ -6,10 +5,15 @@ import ProductForm from './ProductForm';
 import clientAPI from '../../../client-api/rest-client';
 
 const ProductManagement = () => {
+  const [isOpen, setIsOpen] = useState(true); 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const toggleSidebar = () => {
+    setIsOpen(prevState => !prevState); 
+  };
 
   const refreshProducts = async () => {
     setLoading(true);
@@ -32,17 +36,18 @@ const ProductManagement = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Thu nhỏ thanh điều hướng bên trái */}
-      <div className="w-1/6 bg-gray-200 h-full">
-        <SideNav />
-      </div>
-      <div className="w-5/6 p-4 overflow-auto">
+      <SideNav isOpen={isOpen} toggleSidebar={toggleSidebar} />
+      <div className={`flex-1 h-full overflow-auto px-2 ${isOpen ? 'ml-1/5' : 'ml-1/6'}`} >
         {loading ? (
-          <p>Đang tải sản phẩm...</p>
+        <div className="flex justify-center items-center h-full">
+          <div className="spinner-border animate-spin w-8 h-8 border-4 border-t-transparent border-blue-500 rounded-full" />
+        </div>
         ) : error ? (
-          <p className="text-red-500">{error}</p>
+          <div className="bg-red-100 text-red-600 p-4 rounded-md shadow-md">
+            <p>{error}</p>
+          </div>
         ) : (
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-4"> {/* Adjusted gap to match previous structure */}
             <ProductTable products={products} onProductSelect={setSelectedProduct} />
             <ProductForm selectedProduct={selectedProduct} onRefresh={refreshProducts} />
           </div>

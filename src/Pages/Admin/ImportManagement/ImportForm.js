@@ -53,42 +53,57 @@ const ImportForm = ({ selectedImport, onRefresh }) => {
     setError('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
-
-      // Log the data before submitting to check values
-    console.log("Import Data to Submit:", importData);
   
-    // Validation: Ensure required fields are filled
+    // Kiểm tra đầu vào hợp lệ
     if (!importData.idProduct || !importData.nameOfProduct || importData.quantity < 0 || importData.priceImport < 0 || !importData.idProvider) {
       setError('Please fill in all required fields!');
       return;
     }
   
     try {
-      let response;
-      // Remove idImport if it exists to prevent sending it in the API request
+      // Loại bỏ idImport trước khi gửi yêu cầu
       const importDataWithoutIdImport = { ...importData };
-      delete importDataWithoutIdImport.idImport; // Make sure no _id is included in the request
+      delete importDataWithoutIdImport.idImport;
   
-      // Handle create or update based on whether there's a selectedImport
-      if (selectedImport && selectedImport._id) {
-        response = await clientAPI.service('import').patch(selectedImport._id, importDataWithoutIdImport);
-        console.log('Import updated successfully:', response);
-      } else {
-        response = await clientAPI.service('import').create(importDataWithoutIdImport); // Use data without _id
-        console.log('New import created successfully:', response);
-      }
+      // Gửi yêu cầu tạo mới
+      const response = await clientAPI.service('import').create(importDataWithoutIdImport);
+      console.log('New import created successfully:', response);
   
       resetForm();
       if (onRefresh) onRefresh();
     } catch (error) {
-      console.error('Error adding/updating import:', error.response ? error.response.data : error.message);
-      setError('An error occurred while adding/updating the import!');
+      console.error('Error adding import:', error.response ? error.response.data : error.message);
+      setError('An error occurred while adding the import!');
     }
   };
   
+  const handleUpdate = async (e) => {
+    e.preventDefault();
   
+    // Kiểm tra đầu vào hợp lệ
+    if (!importData.idProduct || !importData.nameOfProduct || importData.quantity < 0 || importData.priceImport < 0 || !importData.idProvider) {
+      setError('Please fill in all required fields!');
+      return;
+    }
+  
+    try {
+      // Loại bỏ idImport trước khi gửi yêu cầu
+      const importDataWithoutIdImport = { ...importData };
+      delete importDataWithoutIdImport.idImport;
+  
+      // Gửi yêu cầu cập nhật
+      const response = await clientAPI.service('import').patch(selectedImport._id, importDataWithoutIdImport);
+      console.log('Import updated successfully:', response);
+  
+      resetForm();
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      console.error('Error updating import:', error.response ? error.response.data : error.message);
+      setError('An error occurred while updating the import!');
+    }
+  };  
 
   const handleDelete = async () => {
     if (!selectedImport || !selectedImport._id) return;
@@ -119,7 +134,7 @@ const ImportForm = ({ selectedImport, onRefresh }) => {
   return (
     <div className="import-form p-4 bg-white border ml-4 h-full flex flex-col">
       {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="flex-grow">
+      <form className="flex-grow">
         {[
           { label: 'ID Sản Phẩm', type: 'text', name: 'idProduct', required: true },
           { label: 'Tên Sản Phẩm', type: 'text', name: 'nameOfProduct', required: true },
@@ -144,11 +159,10 @@ const ImportForm = ({ selectedImport, onRefresh }) => {
             )}
           </div>
         ))}
-
         <div className="flex space-x-4 mt-4">
           {[
-            { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500' },
-            { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedImport || !selectedImport._id },
+            { label: 'Thêm', onClick: handleAdd, color: 'yellow-500' },
+            { label: 'Sửa', onClick: handleUpdate, color: 'green-500', disabled: !selectedImport || !selectedImport._id },
             { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !selectedImport || !selectedImport._id },
             { label: 'Làm mới', onClick: () => { resetForm(); if (onRefresh) onRefresh(); }, color: 'blue-500' }
           ].map(({ label, onClick, color, disabled }, idx) => (

@@ -18,6 +18,7 @@ import {
   DialogContent,
   DialogTitle,
   Button,
+  Chip,
 } from '@mui/material';
 
 const OrderTable = ({ orders, onOrderSelect }) => {
@@ -25,7 +26,9 @@ const OrderTable = ({ orders, onOrderSelect }) => {
   const [searchBy, setSearchBy] = useState('nameOfCustomer');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selectedOrder, setSelectedOrder] = useState(null);  // Store the selected order
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -33,6 +36,14 @@ const OrderTable = ({ orders, onOrderSelect }) => {
 
   const handleSearchByChange = (e) => {
     setSearchBy(e.target.value);
+  };
+
+  const handleFromDateChange = (e) => {
+    setFromDate(e.target.value);
+  };
+
+  const handleToDateChange = (e) => {
+    setToDate(e.target.value);
   };
 
   const handlePageChange = (event, newPage) => {
@@ -49,16 +60,84 @@ const OrderTable = ({ orders, onOrderSelect }) => {
   };
 
   const handleRowDoubleClick = (order) => {
-    setSelectedOrder(order);  // Set the selected order
+    setSelectedOrder(order);
   };
 
   const handleCloseModal = () => {
-    setSelectedOrder(null);  // Close the modal
+    setSelectedOrder(null);
   };
 
-  const filteredOrders = orders.filter((order) =>
-    order[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter orders based on the selected criteria
+  const filteredOrders = orders.filter((order) => {
+    const searchMatch =
+      order[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (searchBy === 'dateOrder') {
+      const orderDate = new Date(order.dateOrder);
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
+      const dateMatch =
+        (!from || orderDate >= from) && (!to || orderDate <= to);
+      return searchMatch && dateMatch;
+    }
+
+    return searchMatch;
+  });
+
+  const getOrderStatusChip = (status) => {
+    let label = '';
+    let color = '';
+    let backgroundColor = '';
+
+    switch (status) {
+      case 'Chờ xác nhận':
+        label = 'Chờ xác nhận';
+        color = 'warning';
+        backgroundColor = '#FFCC00';
+        break;
+      case 'Chờ lấy hàng':
+        label = 'Chờ lấy hàng';
+        color = 'info';
+        backgroundColor = '#FFCC00';
+        break;
+      case 'Đang vận chuyển':
+        label = 'Đang vận chuyển';
+        color = 'primary';
+        backgroundColor = '#FFCC00';
+        break;
+      case 'Đang giao':
+        label = 'Đang giao';
+        color = 'primary';
+        backgroundColor = '#FFCC00';
+        break;
+      case 'Đã giao':
+        label = 'Đã giao';
+        color = 'success';
+        backgroundColor = '#006600';
+        break;
+      case 'Đã hủy':
+        label = 'Đã hủy';
+        color = 'error';
+        backgroundColor = '#FF0000';
+        break;
+      default:
+        label = 'Không xác định';
+        color = 'default';
+        backgroundColor = 'lightgray';
+    }
+
+    return (
+      <Chip
+        label={label}
+        color={color}
+        size="small"
+        sx={{
+          backgroundColor: backgroundColor,
+          color: color === 'default' ? 'black' : 'white',
+        }}
+      />
+    );
+  };
 
   return (
     <Box sx={{ display: 'flex', gap: 3 }}>
@@ -67,6 +146,7 @@ const OrderTable = ({ orders, onOrderSelect }) => {
           Danh sách đơn hàng
         </Typography>
 
+        {/* Filters */}
         <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
           <TextField
             label="Tìm kiếm"
@@ -85,16 +165,42 @@ const OrderTable = ({ orders, onOrderSelect }) => {
             sx={{ width: 180 }}
           >
             <MenuItem value="nameOfCustomer">Tên Khách Hàng</MenuItem>
+            <MenuItem value="phone">Số Điện Thoại</MenuItem>
+            <MenuItem value="address">Địa Chỉ</MenuItem>
+            <MenuItem value="payment_method">Phương Thức Thanh Toán</MenuItem>
+            <MenuItem value="isPayment">Trạng Thái Thanh Toán</MenuItem>
             <MenuItem value="dateOrder">Ngày Đặt Hàng</MenuItem>
             <MenuItem value="status">Trạng Thái</MenuItem>
           </TextField>
+          {searchBy === 'dateOrder' && (
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Từ Ngày"
+                type="date"
+                value={fromDate}
+                onChange={handleFromDateChange}
+                size="small"
+                sx={{ width: 180 }}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Đến Ngày"
+                type="date"
+                value={toDate}
+                onChange={handleToDateChange}
+                size="small"
+                sx={{ width: 180 }}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Box>
+          )}
         </Box>
 
+        {/* Table */}
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID Khách Hàng</TableCell>
                 <TableCell>Tên Khách Hàng</TableCell>
                 <TableCell>Số Điện Thoại</TableCell>
                 <TableCell>Địa Chỉ</TableCell>
@@ -115,15 +221,24 @@ const OrderTable = ({ orders, onOrderSelect }) => {
                     onDoubleClick={() => handleRowDoubleClick(order)}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell>{order.idCustomer}</TableCell>
                     <TableCell>{order.nameOfCustomer}</TableCell>
                     <TableCell>{order.phone}</TableCell>
                     <TableCell>{order.address}</TableCell>
                     <TableCell>{new Date(order.dateOrder).toLocaleDateString()}</TableCell>
                     <TableCell>{order.totalPrice?.toLocaleString()} VNĐ</TableCell>
                     <TableCell>{order.payment_method}</TableCell>
-                    <TableCell>{order.isPayment ? 'Đã thanh toán' : 'Chưa thanh toán'}</TableCell>
-                    <TableCell>{order.status}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={order.isPayment ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                        color={order.isPayment ? 'success' : 'warning'}
+                        size="small"
+                        sx={{
+                          backgroundColor: order.isPayment ? '#006600' : '#FF0000',
+                          color: 'white',
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>{getOrderStatusChip(order.status)}</TableCell>
                   </TableRow>
                 ))}
             </TableBody>
@@ -141,7 +256,7 @@ const OrderTable = ({ orders, onOrderSelect }) => {
         />
       </Paper>
 
-      {/* Modal to show selected order details */}
+      {/* Modal for Order Details */}
       <Dialog open={selectedOrder !== null} onClose={handleCloseModal}>
         <DialogTitle>
           Thông Tin Đơn Hàng
@@ -186,6 +301,11 @@ const OrderTable = ({ orders, onOrderSelect }) => {
       </Dialog>
     </Box>
   );
+};
+
+OrderTable.propTypes = {
+  orders: PropTypes.array.isRequired,
+  onOrderSelect: PropTypes.func.isRequired,
 };
 
 export default OrderTable;

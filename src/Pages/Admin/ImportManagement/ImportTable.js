@@ -17,13 +17,26 @@ import {
 const ImportTable = ({ imports, onImportSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchBy, setSearchBy] = useState('nameOfProduct');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Lọc dữ liệu dựa trên từ khóa tìm kiếm và trường tìm kiếm
-  const filteredImports = imports.filter((importItem) =>
-    importItem[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredImports = imports.filter((importItem) => {
+    // Lọc theo searchBy
+    let isMatch = importItem[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Nếu tìm kiếm theo giá, lọc thêm theo khoảng giá
+    if (searchBy === 'priceImport') {
+      const price = parseFloat(importItem.priceImport);
+      const min = minPrice ? parseFloat(minPrice) : 0;
+      const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+      isMatch = isMatch && price >= min && price <= max;
+    }
+
+    return isMatch;
+  });
 
   // Xử lý khi nhấn vào một hàng trong bảng
   const handleRowClick = (importItem) => {
@@ -54,14 +67,36 @@ const ImportTable = ({ imports, onImportSelect }) => {
           size="small"
           sx={{ width: 180 }}
         >
-          <MenuItem value="_id">ID nhập</MenuItem>
           <MenuItem value="idProduct">Mã sản phẩm</MenuItem>
           <MenuItem value="nameOfProduct">Tên sản phẩm</MenuItem>
-          <MenuItem value="quantity">Số lượng</MenuItem>
           <MenuItem value="priceImport">Giá nhập</MenuItem>
           <MenuItem value="idProvider">Mã nhà cung cấp</MenuItem>
           <MenuItem value="nameOfProvider">Tên nhà cung cấp</MenuItem>
         </TextField>
+        
+        {/* Nếu tìm kiếm theo giá, thêm input cho khoảng giá */}
+        {searchBy === 'priceImport' && (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <TextField
+              label="Min Price"
+              variant="outlined"
+              size="small"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              type="number"
+              sx={{ width: 120 }}
+            />
+            <TextField
+              label="Max Price"
+              variant="outlined"
+              size="small"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              type="number"
+              sx={{ width: 120 }}
+            />
+          </Box>
+        )}
       </Box>
 
       {/* Hiển thị khi không có kết quả tìm kiếm */}

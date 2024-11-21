@@ -5,10 +5,15 @@ import ImportForm from './ImportForm';
 import clientAPI from '../../../client-api/rest-client';
 
 const ImportManagement = () => {
+  const [isOpen, setIsOpen] = useState(true); // Toggle sidebar state
   const [selectedImport, setSelectedImport] = useState(null);
   const [imports, setImports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const toggleSidebar = () => {
+    setIsOpen(prevState => !prevState); // Toggle sidebar visibility
+  };
 
   const refreshImports = async () => {
     setLoading(true);
@@ -31,14 +36,16 @@ const ImportManagement = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/5 bg-gray-200 h-full">
-        <SideNav />
-      </div>
-      <div className="w-4/5 p-4 overflow-auto">
+      <SideNav isOpen={isOpen} toggleSidebar={toggleSidebar} />
+      <div className={`flex-1 h-full overflow-auto px-2 ${isOpen ? 'ml-1/5' : 'ml-1/6'}`}> 
         {loading ? (
-          <p>Loading imports...</p>
+          <div className="flex justify-center items-center h-full">
+            <div className="spinner-border animate-spin w-8 h-8 border-4 border-t-transparent border-blue-500 rounded-full" />
+          </div>
         ) : error ? (
-          <p className="text-red-500">{error}</p>
+          <div className="bg-red-100 text-red-600 p-4 rounded-md shadow-md">
+            <p>{error}</p>
+          </div>
         ) : (
           <div className="flex flex-col md:flex-row gap-4">
             <ImportTable imports={imports} onImportSelect={setSelectedImport} />
