@@ -31,8 +31,8 @@ import ChangePassword from "./Pages/Account/ChangePassword";
 import StatisticsManagement from "./Pages/Admin/StatisticsManagement/StatisticsManagement";
 
 function App() {
-  const role = JSON.parse(localStorage.getItem('user'))?.data.role;
-
+  const role = JSON.parse(localStorage.getItem('user'))?.data.role || "admin";
+  console.log(role);
   return (
     <Router>
       <div>
