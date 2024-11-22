@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clientAPI from "./client-api/rest-client";
-import { monitorToken } from "./tokenManager";  // Import hàm monitorToken từ tokenManager.js
 
 const Header = () => {
   const [user, setUser] = useState(null);
@@ -16,7 +15,7 @@ const Header = () => {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser && storedUser.data) {
-      setUser({ username: storedUser.data.username });
+      setUser({ username: storedUser.data.username, role: storedUser.data.role });
     } else {
       setUser(null);
     }
@@ -180,6 +179,18 @@ const Header = () => {
                   >
                     Đổi mật khẩu
                   </Link>
+
+                  {/* Thêm nút trang quản lý admin nếu vai trò là admin */}
+                  {user?.role === "admin" && (
+                    <Link
+                      to="/nav"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
+                    >
+                      Trang quản lý Admin
+                    </Link>
+                  )}
+
                   <button
                     onClick={() => {
                       handleLogout();

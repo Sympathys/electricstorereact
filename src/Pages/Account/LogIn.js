@@ -39,7 +39,8 @@ const LogIn = () => {
           localStorage.setItem('userToken', data.accessToken); // Lưu token
           if(userRole === "user"){
             navigate(`/HomePage`);
-          } else if (userRole === "admin") {
+          } 
+          if (userRole === "admin") {
             navigate(`/nav`);
           }
       }catch (error) {
