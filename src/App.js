@@ -28,6 +28,7 @@ import OrdersPage from "./Pages/Order/OrdersPage";
 import OrderDetailPage from "./Pages/Order/OrderDetailPage";
 import ResetPassword from "./Pages/Account/ResetPassword";
 import ChangePassword from "./Pages/Account/ChangePassword";
+import StatisticsManagement from "./Pages/Admin/StatisticsManagement/StatisticsManagement";
 
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.data.role;
@@ -110,6 +111,7 @@ function App() {
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} /> {/* Định tuyến tất cả các URL không khớp */}
           <Route path="/verification-success" element={<VerificationSuccess/>} />
+          <Route path="/StatisticsManagement" element={<StatisticsManagement/>}/>
         </Routes>
         <Footer/>
       </div>
