@@ -33,7 +33,7 @@ const BankTransferQRCode = () => {
   }, [linkPayment]); // Chạy lại khi linkPayment thay đổi
 
   const handleReturnToCheckout = () => {
-    navigate("/checkout");
+    navigate("/CheckoutPage");
   };
 
   return (

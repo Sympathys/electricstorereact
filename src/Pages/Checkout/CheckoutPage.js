@@ -76,7 +76,6 @@ useEffect(() => {
                 const filteredWards = response.data.flatMap(group => {
                     // Kiểm tra nếu group là mảng, nếu không thì chuyển thành mảng
                     const groupArray = Array.isArray(group) ? group : [group];
-                    console.log(groupArray);
                     // Duyệt qua các nhóm con bên trong (nếu có)
                     return groupArray.filter(ward => String(ward.district_code) === String(selectedDistrict));
                 });
@@ -141,7 +140,7 @@ useEffect(() => {
         try {
             const data = await clientAPI.service('order').create(checkOutData);
             if (paymentMethod === "Cod") {
-                navigate("/order-pending", { state: { orderId: data.data._id } });
+                navigate(`/order-pending/${data.data._id}`, { state: { orderId: data.data._id } });
             } else if (paymentMethod === "Bank") {
                 navigate("/bank-transfer-qr-code", { state: { linkPayment: data.data.linkPayment } });
             } else {

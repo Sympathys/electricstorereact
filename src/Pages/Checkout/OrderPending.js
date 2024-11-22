@@ -1,10 +1,13 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const OrderPending = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const orderId = location.state?.orderId || "Không xác định"; // Lấy ID đơn hàng hoặc hiển thị "Không xác định" nếu không có
+    const { orderIdParams } = useParams(); // Lấy orderId từ params
+    const stateOrderId = location.state?.orderId; // Lấy orderId từ state
+    // Ưu tiên lấy orderId từ state, nếu không có thì lấy từ params
+    const orderId = stateOrderId || orderIdParams || "Không xác định";
 
     const handleReturnToHome = () => {
         navigate("/"); // Điều hướng trở về trang chủ
