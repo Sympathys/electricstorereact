@@ -30,8 +30,8 @@ import ResetPassword from "./Pages/Account/ResetPassword";
 import ChangePassword from "./Pages/Account/ChangePassword";
 
 function App() {
-  const role = JSON.parse(localStorage.getItem('user'))?.data.role;
-
+  const role = JSON.parse(localStorage.getItem('user'))?.data.role || "admin";
+  console.log(role);
   return (
     <Router>
       <div>
