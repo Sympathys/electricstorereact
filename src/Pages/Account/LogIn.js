@@ -37,12 +37,7 @@ const LogIn = () => {
           // Lưu thông tin người dùng và token vào localStorage
           localStorage.setItem('user', JSON.stringify(data)); // Lưu thông tin người dùng
           localStorage.setItem('userToken', data.accessToken); // Lưu token
-          if(userRole === "user"){
             navigate(`/HomePage`);
-          } 
-          if (userRole === "admin") {
-            navigate(`/nav`);
-          }
       }catch (error) {
         console.error("Error during login:", error);
         console.error("Error details:", error.response);

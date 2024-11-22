@@ -21,32 +21,35 @@ const SideNav = () => {
   };
 
   return (
-  <div className={`bg-white border-r h-screen shadow-md ${isOpen ? 'w-80' : 'w-10'} relative`}>
-    <button
-      onClick={toggleSidebar}
-      className="absolute top-250 right-0 bg-gray-200 p-1 rounded-full hover:bg-gray-300"
-    >
-      {isOpen ? '<' : '>'}
-    </button>
-    {isOpen && (
-      <ul className="flex flex-col p-4">
-        {routes.map(route => (
-          <li
-            key={route.path}
-            className={`mb-2 p-3 cursor-pointer rounded-md transition-colors duration-300 ${
-              location.pathname === route.path
-                ? 'bg-pink-500 text-white'
-                : 'hover:bg-gray-200'
-            }`}
-          >
-            <Link to={route.path} className="no-underline text-inherit">
-              {route.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    )}
-</div>
+    <div className={`bg-white border-r h-screen shadow-md ${isOpen ? 'w-80' : 'w-10'} relative`}>
+      <button
+        onClick={toggleSidebar}
+        className="absolute top-250 right-0 bg-gray-200 p-1 rounded-full hover:bg-gray-300"
+      >
+        {isOpen ? '<' : '>'}
+      </button>
+      {isOpen && (
+        <ul className="flex flex-col p-4">
+          {routes.map(route => (
+            <li
+              key={route.path}
+              className={`mb-2 cursor-pointer rounded-md transition-colors duration-300 ${
+                location.pathname === route.path
+                  ? 'bg-pink-500 text-white'
+                  : 'hover:bg-gray-200'
+              }`}
+            >
+              <Link
+                to={route.path}
+                className="block p-3 no-underline text-inherit"
+              >
+                {route.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 };
 

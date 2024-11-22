@@ -47,7 +47,7 @@ const ProductDetail = () => {
     } else {
       try {
         const response = await clientAPI.service('cart').create({
-          idProduct: productDetail._id,
+          idProduct: productDetail.idProduct,
           quantity: 1,
           nameOfProduct: productDetail.nameOfProduct,
           image: productDetail.image,
