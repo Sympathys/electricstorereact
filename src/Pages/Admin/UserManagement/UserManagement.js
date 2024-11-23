@@ -20,7 +20,6 @@ const UserManagement = () => {
       setSelectedUser(null); // Reset selected user after refreshing
     } catch (error) {
       console.error('Cannot fetch users:', error);
-      setError('Could not load users. Please try again.');
     } finally {
       setLoading(false);
     }
