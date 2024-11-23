@@ -79,11 +79,13 @@ const ProductListing = () => {
                             className="border rounded-lg p-4 shadow cursor-pointer"
                             onClick={() => handleProductDetailClick(product._id)}
                         >
-                            <img
-                                src={product.image ? product.image : "https://via.placeholder.com/150"}
-                                alt={product.nameOfProduct}
-                                className="w-full h-32 object-cover mb-2 rounded"
-                            />
+                            <div className="w-full h-32 mb-2 rounded overflow-hidden">
+                                <img
+                                    src={product.image ? product.image : "https://via.placeholder.com/150"}
+                                    alt={product.nameOfProduct}
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
                             <h3 className="text-lg font-semibold">{product.nameOfProduct}</h3>
                             <p className="text-gray-700">{product.price} ₫</p>
                         </div>
@@ -92,7 +94,6 @@ const ProductListing = () => {
                     <p className="col-span-4 text-center">Không có sản phẩm nào</p>
                 )}
             </div>
-
             {/* Pagination Controls */}
             <div className="flex justify-center mt-6">
                 <button

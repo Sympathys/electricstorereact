@@ -161,9 +161,8 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
             onChange={handleChange}
             className="border py-1 px-2 w-full"
           >
-            <option value="Momo">Momo</option>
-            <option value="Cash">Cash</option>
-            <option value="COD">COD</option>
+            <option value="Bank">Bank</option>
+            <option value="Cod">Cod</option>
           </select>
         </div>
   

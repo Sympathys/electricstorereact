@@ -18,9 +18,9 @@ const OrdersPage = () => {
             }
         } catch (error) {
             if (error.response && error.response.data) {
-                window.alert(`Error: ${error.response.data.message}`);
+                console.log(`Error: ${error.response.data.message}`);
             } else {
-                window.alert("Error: Something went wrong");
+                console.log("Error: Something went wrong");
             }
             console.log(error);
         }
@@ -33,7 +33,7 @@ const OrdersPage = () => {
     const handleOrderClick = (orderId) => {
         navigate(`/OrderDetail/${orderId}`);
     };
-    
+
     return (
         <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="p-4">
@@ -45,8 +45,14 @@ const OrdersPage = () => {
                         <div key={order._id} className="flex items-center justify-between border-b border-gray-200 py-4">
                             <div className="flex-1">
                                 <h3 className="text-gray-900 text-lg font-bold">Đơn hàng #{order._id}</h3>
-                                <p className="text-gray-600 text-sm">Ngày đặt: {new Date(order.dateOrder).toLocaleDateString()}</p>
-                                <p className="text-gray-600 text-sm">Ngày nhận: {new Date(order.dateReceived).toLocaleDateString()}</p>
+                                <p className="text-gray-600 text-sm">
+                                    Ngày đặt: {new Date(order.dateOrder).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                </p>
+                                <p className="text-gray-600 text-sm">
+                                    Ngày nhận: {new Date(order.dateReceived) < new Date(order.dateOrder)
+                                        ? "Chưa nhận hàng"
+                                        : new Date(order.dateReceived).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                </p>
                                 <p className="text-green-500 text-md font-semibold">{order.totalPrice} ₫</p>
                             </div>
                             <div className="flex flex-col items-center">

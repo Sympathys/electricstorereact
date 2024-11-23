@@ -19,9 +19,9 @@ const HomePage = () => {
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        window.alert(`Error: ${error.response.data.message}`);
+        console.log(`Error: ${error.response.data.message}`);
       } else {
-        window.alert("Error: Something went wrong");
+        console.log("Error: Something went wrong");
       }
       console.log(error);
     }
