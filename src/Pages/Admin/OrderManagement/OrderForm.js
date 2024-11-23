@@ -67,7 +67,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
     } else {
       resetForm();
     }
-  }, [selectedOrder]);
+  }, [selectedOrder]);      
 
   const handleChange = (e) => {
     const { name, value } = e.target;
