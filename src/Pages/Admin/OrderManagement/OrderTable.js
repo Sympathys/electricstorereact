@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Table,
   TableBody,
@@ -13,11 +12,6 @@ import {
   TextField,
   MenuItem,
   TablePagination,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
   Chip,
 } from '@mui/material';
 
@@ -140,172 +134,155 @@ const OrderTable = ({ orders, onOrderSelect }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', gap: 3 }}>
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-          Danh sách đơn hàng
-        </Typography>
+    <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
+      <Typography
+        variant="h5"
+        component="h2"
+        sx={{ mb: 2, fontWeight: 'bold', textAlign: 'center' }}
+      >
+        Bảng danh sách đơn hàng
+      </Typography>
 
-        {/* Filters */}
-        <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
-          <TextField
-            label="Tìm kiếm"
-            variant="outlined"
-            size="small"
-            value={searchTerm}
-            onChange={handleSearch}
-            sx={{ flex: 1 }}
-          />
-          <TextField
-            select
-            label="Tìm kiếm theo"
-            value={searchBy}
-            onChange={handleSearchByChange}
-            size="small"
-            sx={{ width: 180 }}
-          >
-            <MenuItem value="nameOfCustomer">Tên Khách Hàng</MenuItem>
-            <MenuItem value="phone">Số Điện Thoại</MenuItem>
-            <MenuItem value="address">Địa Chỉ</MenuItem>
-            <MenuItem value="payment_method">Phương Thức Thanh Toán</MenuItem>
-            <MenuItem value="isPayment">Trạng Thái Thanh Toán</MenuItem>
-            <MenuItem value="dateOrder">Ngày Đặt Hàng</MenuItem>
-            <MenuItem value="status">Trạng Thái</MenuItem>
-          </TextField>
-          {searchBy === 'dateOrder' && (
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField
-                label="Từ Ngày"
-                type="date"
-                value={fromDate}
-                onChange={handleFromDateChange}
-                size="small"
-                sx={{ width: 180 }}
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                label="Đến Ngày"
-                type="date"
-                value={toDate}
-                onChange={handleToDateChange}
-                size="small"
-                sx={{ width: 180 }}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Box>
-          )}
-        </Box>
-
-        {/* Table */}
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Tên Khách Hàng</TableCell>
-                <TableCell>Số Điện Thoại</TableCell>
-                <TableCell>Địa Chỉ</TableCell>
-                <TableCell>Ngày Đặt Hàng</TableCell>
-                <TableCell>Tổng Tiền</TableCell>
-                <TableCell>Phương Thức Thanh Toán</TableCell>
-                <TableCell>Trạng Thái Thanh Toán</TableCell>
-                <TableCell>Trạng Thái</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredOrders
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((order) => (
-                  <TableRow
-                    key={order._id}
-                    onClick={() => handleRowClick(order._id)}
-                    onDoubleClick={() => handleRowDoubleClick(order)}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell>{order.nameOfCustomer}</TableCell>
-                    <TableCell>{order.phone}</TableCell>
-                    <TableCell>{order.address}</TableCell>
-                    <TableCell>{new Date(order.dateOrder).toLocaleDateString()}</TableCell>
-                    <TableCell>{order.totalPrice?.toLocaleString()} VNĐ</TableCell>
-                    <TableCell>{order.payment_method}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={order.isPayment ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                        color={order.isPayment ? 'success' : 'warning'}
-                        size="small"
-                        sx={{
-                          backgroundColor: order.isPayment ? '#006600' : '#FF0000',
-                          color: 'white',
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>{getOrderStatusChip(order.status)}</TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <TablePagination
-          component="div"
-          count={filteredOrders.length}
-          page={page}
-          onPageChange={handlePageChange}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleRowsPerPageChange}
-          rowsPerPageOptions={[5, 10, 25]}
+      {/* Thanh công cụ tìm kiếm */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <TextField
+          label="Tìm kiếm"
+          variant="outlined"
+          size="small"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ flex: 1 }}
         />
-      </Paper>
+        <TextField
+          select
+          label="Tìm kiếm theo"
+          value={searchBy}
+          onChange={(e) => setSearchBy(e.target.value)}
+          size="small"
+          sx={{ width: 200 }}
+        >
+          <MenuItem value="nameOfCustomer">Tên Khách Hàng</MenuItem>
+          <MenuItem value="phone">Số Điện Thoại</MenuItem>
+          <MenuItem value="address">Địa Chỉ</MenuItem>
+          <MenuItem value="payment_method">Phương Thức Thanh Toán</MenuItem>
+          <MenuItem value="isPayment">Trạng Thái Thanh Toán</MenuItem>
+          <MenuItem value="dateOrder">Ngày Đặt Hàng</MenuItem>
+          <MenuItem value="status">Trạng Thái</MenuItem>
+        </TextField>
+        {searchBy === 'dateOrder' && (
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              label="Từ Ngày"
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              size="small"
+              sx={{ width: 200 }}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="Đến Ngày"
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              size="small"
+              sx={{ width: 200 }}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+        )}
+      </Box>
 
-      {/* Modal for Order Details */}
-      <Dialog open={selectedOrder !== null} onClose={handleCloseModal}>
-        <DialogTitle>
-          Thông Tin Đơn Hàng
-          <Button onClick={handleCloseModal} sx={{ position: 'absolute', right: 8, top: 8 }}>
-            X
-          </Button>
-        </DialogTitle>
-        <DialogContent>
-          {selectedOrder && (
-            <>
-              <Typography variant="h6">Thông Tin Sản Phẩm</Typography>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Tên Sản Phẩm</TableCell>
-                      <TableCell>Số Lượng</TableCell>
-                      <TableCell>Đơn Giá</TableCell>
-                      <TableCell>Tổng Giá</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {selectedOrder.products.map((product, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{product.nameOfProduct}</TableCell>
-                        <TableCell>{product.quantity}</TableCell>
-                        <TableCell>{product.price?.toLocaleString()} VNĐ</TableCell>
-                        <TableCell>{(product.quantity * product.price)?.toLocaleString()} VNĐ</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
-            Đóng
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      {/* Bảng danh sách đơn hàng */}
+      <TableContainer sx={{ maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Tên Khách Hàng</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Số Điện Thoại</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 250 }}>Địa Chỉ</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Ngày Đặt Hàng</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Tổng Tiền</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Phương Thức Thanh Toán</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 180 }}>Trạng Thái Thanh Toán</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Trạng Thái</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredOrders
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((order) => (
+                <TableRow
+                  key={order._id}
+                  hover
+                  onClick={() => handleRowClick(order._id)}
+                  onDoubleClick={() => handleRowDoubleClick(order)}
+                  sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+                >
+                  <TableCell>{order.nameOfCustomer}</TableCell>
+                  <TableCell>{order.phone}</TableCell>
+                  <TableCell>{order.address}</TableCell>
+                  <TableCell>
+                    {new Date(order.dateOrder).toLocaleDateString('vi-VN', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
+                  </TableCell>
+                  <TableCell>{order.totalPrice?.toLocaleString()} VNĐ</TableCell>
+                  <TableCell>{order.payment_method}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={order.isPayment ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                      color={order.isPayment ? 'success' : 'warning'}
+                      size="small"
+                      sx={{
+                        backgroundColor: order.isPayment ? '#006600' : '#FF0000',
+                        color: 'white',
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={order.status}
+                      color={
+                        order.status === 'Đã giao'
+                          ? 'success'
+                          : order.status === 'Đã hủy'
+                          ? 'error'
+                          : 'primary'
+                      }
+                      size="small"
+                      sx={{
+                        backgroundColor:
+                          order.status === 'Đã giao'
+                            ? '#006600'
+                            : order.status === 'Đã hủy'
+                            ? '#FF0000'
+                            : '#FFCC00',
+                        color: 'white',
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Phân trang */}
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredOrders.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+        labelRowsPerPage="Số hàng mỗi trang"
+      />
+    </Paper>
   );
-};
-
-OrderTable.propTypes = {
-  orders: PropTypes.array.isRequired,
-  onOrderSelect: PropTypes.func.isRequired,
 };
 
 export default OrderTable;

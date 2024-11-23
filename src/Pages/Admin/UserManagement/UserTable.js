@@ -54,9 +54,9 @@ const UserTable = ({ onUserSelect }) => {
   });
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-        Danh sách thông tin tài khoản
+    <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 2, fontWeight: 'bold', textAlign: 'center' }}>
+          Bảng danh sách thông tin người dùng
       </Typography>
       
       {error && (
@@ -93,12 +93,12 @@ const UserTable = ({ onUserSelect }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID Account</TableCell>
-              <TableCell>Tên</TableCell>
-              <TableCell>Số điện thoại</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Địa chỉ</TableCell>
-              <TableCell>Role</TableCell> {/* Add Role column */}
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>ID Account</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Tên</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Số điện thoại</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Email</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Địa chỉ</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Role</TableCell> {/* Add Role column */}
             </TableRow>
           </TableHead>
           <TableBody>

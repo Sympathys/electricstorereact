@@ -11,7 +11,7 @@ import {
   Box,
   TextField,
   MenuItem,
-  TablePagination
+  TablePagination,
 } from '@mui/material';
 
 const ImportTable = ({ imports, onImportSelect }) => {
@@ -22,35 +22,28 @@ const ImportTable = ({ imports, onImportSelect }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Lọc dữ liệu dựa trên từ khóa tìm kiếm và trường tìm kiếm
   const filteredImports = imports.filter((importItem) => {
-    // Lọc theo searchBy
     let isMatch = importItem[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase());
-
-    // Nếu tìm kiếm theo giá, lọc thêm theo khoảng giá
     if (searchBy === 'priceImport') {
       const price = parseFloat(importItem.priceImport);
       const min = minPrice ? parseFloat(minPrice) : 0;
       const max = maxPrice ? parseFloat(maxPrice) : Infinity;
       isMatch = isMatch && price >= min && price <= max;
     }
-
     return isMatch;
   });
 
-  // Xử lý khi nhấn vào một hàng trong bảng
   const handleRowClick = (importItem) => {
     onImportSelect(importItem);
   };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-        Danh sách nhập hàng
+    <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 2, fontWeight: 'bold', textAlign: 'center' }}>
+        Bảng danh sách nhập hàng
       </Typography>
 
-      {/* Thanh tìm kiếm */}
-      <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
           label="Tìm kiếm"
           variant="outlined"
@@ -65,7 +58,7 @@ const ImportTable = ({ imports, onImportSelect }) => {
           value={searchBy}
           onChange={(e) => setSearchBy(e.target.value)}
           size="small"
-          sx={{ width: 180 }}
+          sx={{ width: 200 }}
         >
           <MenuItem value="idProduct">Mã sản phẩm</MenuItem>
           <MenuItem value="nameOfProduct">Tên sản phẩm</MenuItem>
@@ -73,92 +66,74 @@ const ImportTable = ({ imports, onImportSelect }) => {
           <MenuItem value="idProvider">Mã nhà cung cấp</MenuItem>
           <MenuItem value="nameOfProvider">Tên nhà cung cấp</MenuItem>
         </TextField>
-        
-        {/* Nếu tìm kiếm theo giá, thêm input cho khoảng giá */}
         {searchBy === 'priceImport' && (
           <Box sx={{ display: 'flex', gap: 1 }}>
             <TextField
-              label="Min Price"
+              label="Giá tối thiểu"
               variant="outlined"
               size="small"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
               type="number"
-              sx={{ width: 120 }}
+              sx={{ width: 140 }}
             />
             <TextField
-              label="Max Price"
+              label="Giá tối đa"
               variant="outlined"
               size="small"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               type="number"
-              sx={{ width: 120 }}
+              sx={{ width: 140 }}
             />
           </Box>
         )}
       </Box>
 
-      {/* Hiển thị khi không có kết quả tìm kiếm */}
       {filteredImports.length === 0 && (
-        <Typography variant="body2" color="error" sx={{ textAlign: 'center', p: 2 }}>
+        <Typography variant="body2" color="error" sx={{ textAlign: 'center' }}>
           Không tìm thấy kết quả
         </Typography>
       )}
 
-      {/* Bảng dữ liệu */}
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <TableContainer sx={{ maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ maxWidth: 120, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                ID nhập
-              </TableCell>
-              <TableCell>Mã sản phẩm</TableCell>
-              <TableCell>Tên sản phẩm</TableCell>
-              <TableCell align="right">Số lượng</TableCell>
-              <TableCell align="right">Giá nhập</TableCell>
-              <TableCell>Mã nhà cung cấp</TableCell>
-              <TableCell>Tên nhà cung cấp</TableCell>
-              <TableCell>Ngày nhập</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>ID nhập</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Mã sản phẩm</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 200 }}>Tên sản phẩm</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', minWidth: 120 }}>Số lượng</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', minWidth: 150 }}>Giá nhập</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 200 }}>Mã nhà cung cấp</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 200 }}>Tên nhà cung cấp</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 200 }}>Ngày nhập</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredImports
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((importItem, index) => (
-                <TableRow
-                  key={index}
-                  hover
-                  onClick={() => handleRowClick(importItem)}
-                  className="cursor-pointer hover:bg-gray-100"
-                >
-                  <TableCell
-                    sx={{
-                      maxWidth: 120,
-                      textOverflow: 'ellipsis',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {importItem._id}
-                  </TableCell>
-                  <TableCell>{importItem.idProduct}</TableCell>
-                  <TableCell>{importItem.nameOfProduct}</TableCell>
-                  <TableCell align="right">{importItem.quantity}</TableCell>
-                  <TableCell align="right">{importItem.priceImport}</TableCell>
-                  <TableCell>{importItem.idProvider}</TableCell>
-                  <TableCell>{importItem.nameOfProvider || 'N/A'}</TableCell>
-                  <TableCell>
-                    {importItem.dateImport ? new Date(importItem.dateImport).toLocaleDateString() : 'N/A'}
-                  </TableCell>
-                </TableRow>
-              ))}
+            {filteredImports.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((importItem, index) => (
+              <TableRow
+                key={index}
+                hover
+                onClick={() => handleRowClick(importItem)}
+                sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+              >
+                <TableCell>{importItem._id}</TableCell>
+                <TableCell>{importItem.idProduct}</TableCell>
+                <TableCell>{importItem.nameOfProduct}</TableCell>
+                <TableCell align="right">{importItem.quantity}</TableCell>
+                <TableCell align="right">{importItem.priceImport}</TableCell>
+                <TableCell>{importItem.idProvider}</TableCell>
+                <TableCell>{importItem.nameOfProvider || 'N/A'}</TableCell>
+                <TableCell>
+                  {importItem.dateImport ? new Date(importItem.dateImport).toLocaleDateString() : 'N/A'}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* Phân trang */}
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"

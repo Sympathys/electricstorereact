@@ -49,8 +49,16 @@ const OrderDetailPage = () => {
                 </div>
                 <div className="mb-4">
                     <h3 className="text-gray-700 text-xl font-semibold">Thông tin đơn hàng</h3>
-                    <p><strong>Ngày đặt:</strong> {new Date(order.dateOrder).toLocaleDateString()}</p>
-                    <p><strong>Ngày nhận:</strong> {new Date(order.dateReceived).toLocaleDateString()}</p>
+                    <p>
+                        <strong>Ngày đặt:</strong>{" "}
+                        {new Date(order.dateOrder).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </p>
+                    <p>
+                        <strong>Ngày nhận:</strong>{" "}
+                        {new Date(order.dateReceived) < new Date(order.dateOrder)
+                            ? "Chưa nhận hàng"
+                            : new Date(order.dateReceived).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </p>
                     <p><strong>Phương thức thanh toán:</strong> {order.payment_method}</p>
                     <p><strong>Trạng thái:</strong> {order.status}</p>
                     <p><strong>Tổng tiền:</strong> {order.totalPrice} ₫</p>
@@ -79,10 +87,16 @@ const OrderDetailPage = () => {
                     </table>
                 </div>
                 {order.linkPayment && (
-                    <div className="mb-4">
-                        <h3 className="text-gray-700 text-xl font-semibold">Liên kết thanh toán</h3>
-                        <a href={order.linkPayment} target="_blank" className="text-blue-500 hover:text-blue-700">Thanh toán tại đây</a>
-                    </div>
+                    <a
+                        href="#"
+                        onClick={(e) => {
+                            e.preventDefault(); // Ngăn hành vi mặc định
+                            navigate("/bank-transfer-qr-code", { state: { linkPayment: order.linkPayment } });
+                        }}
+                        className="text-blue-500 hover:text-blue-700"
+                    >
+                        Thanh toán tại đây
+                    </a>
                 )}
                 <div className="mt-6">
                     <button
