@@ -24,7 +24,6 @@ const ProductManagement = () => {
       setSelectedProduct(null);
     } catch (error) {
       console.error('Không thể lấy sản phẩm:', error);
-      setError('Không thể tải sản phẩm. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
