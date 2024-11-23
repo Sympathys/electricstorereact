@@ -69,7 +69,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
     };
 
     try {
-      await clientAPI.create(formData);
+      const response = await clientAPI.service('account').create(formData);
       resetForm();
       if (onRefresh) onRefresh();
     } catch (error) {
@@ -98,7 +98,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
     }
 
     try {
-      await clientAPI.patch(`${selectedAccount._id}`, formData);
+      await clientAPI.service('account').patch(selectedAccount._id, formData);
       resetForm();
       if (onRefresh) onRefresh();
     } catch (error) {
@@ -109,7 +109,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
   const handleDelete = async () => {
     if (!selectedAccount) return;
     try {
-      await clientAPI.remove(`${selectedAccount._id}`);
+      await clientAPI.service('account').remove(selectedAccount._id);
       resetForm();
       if (onRefresh) onRefresh();
     } catch (error) {
