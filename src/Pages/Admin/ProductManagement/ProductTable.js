@@ -13,6 +13,7 @@ const ProductTable = ({ onProductSelect }) => {
   const [searchBy, setSearchBy] = useState('nameOfProduct');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -28,8 +29,8 @@ const ProductTable = ({ onProductSelect }) => {
 
   const filteredProducts = products.filter(product => {
     const matchesSearchTerm = product[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPriceRange = 
-      (!minPrice || product.price >= minPrice) && 
+    const matchesPriceRange =
+      (!minPrice || product.price >= minPrice) &&
       (!maxPrice || product.price <= maxPrice);
     return matchesSearchTerm && matchesPriceRange;
   });
@@ -42,13 +43,20 @@ const ProductTable = ({ onProductSelect }) => {
     return status === 'Available' ? 'Còn hàng' : 'Hết hàng';
   };
 
+  const getQuantityChipColor = (quantity) => {
+    if (quantity < 10) return 'error';
+    if (quantity < 50) return 'warning';
+    return 'success';
+  };
+
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-        Danh sách sản phẩm
+    <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 2, fontWeight: 'bold', textAlign: 'center' }}>
+        Bảng danh sách sản phẩm
       </Typography>
-      
-      <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
+
+      {/* Search and Filter */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
           label="Tìm kiếm"
           variant="outlined"
@@ -63,18 +71,17 @@ const ProductTable = ({ onProductSelect }) => {
           value={searchBy}
           onChange={(e) => setSearchBy(e.target.value)}
           size="small"
-          sx={{ width: 180 }}
+          sx={{ width: 200 }}
         >
           <MenuItem value="nameOfProduct">Tên sản phẩm</MenuItem>
           <MenuItem value="typeProduct">Loại sản phẩm</MenuItem>
           <MenuItem value="price">Giá</MenuItem>
-          <MenuItem value="idProduct">Mã sản phẩm</MenuItem> {/* Added product code option */}
-          <MenuItem value="status">Trạng thái</MenuItem> {/* Added status option */}
+          <MenuItem value="idProduct">Mã sản phẩm</MenuItem>
+          <MenuItem value="status">Trạng thái</MenuItem>
         </TextField>
 
-        {/* Price Range Inputs */}
         {searchBy === 'price' && (
-          <>
+          <Box sx={{ display: 'flex', gap: 1 }}>
             <TextField
               label="Giá tối thiểu"
               variant="outlined"
@@ -93,40 +100,54 @@ const ProductTable = ({ onProductSelect }) => {
               onChange={(e) => setMaxPrice(e.target.value)}
               sx={{ width: 180 }}
             />
-          </>
+          </Box>
         )}
       </Box>
 
-      <TableContainer sx={{ maxHeight: 440 }}>
+      {/* Table */}
+      <TableContainer sx={{ maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Mã SP</TableCell>
-              <TableCell>Tên sản phẩm</TableCell>
-              <TableCell>Loại</TableCell>
-              <TableCell align="right">Số lượng</TableCell>
-              <TableCell align="right">Giá</TableCell>
-              <TableCell align="center">Trạng thái</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 80 }}>Mã SP</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Tên sản phẩm</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 100 }}>Loại</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 80, textAlign:"right"}}>Số lượng</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 80, textAlign:"right"}}>Giá</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150}}>Trạng thái</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(product => (
-              <TableRow key={product.idProduct} hover onClick={() => onProductSelect(product)}>
+              <TableRow
+                key={product.idProduct}
+                hover
+                selected={selectedRow === product.idProduct}
+                onClick={() => {
+                  setSelectedRow(product.idProduct);
+                  onProductSelect(product);
+                }}
+                sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+              >
                 <TableCell>{product.idProduct}</TableCell>
                 <TableCell>
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                      {product.nameOfProduct}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      {product.description?.slice(0, 100)}{product.description?.length > 100 ? '...' : ''}
-                    </Typography>
-                  </Box>
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                  >
+                    {product.nameOfProduct}
+                  </Typography>
                 </TableCell>
                 <TableCell>{product.typeProduct}</TableCell>
-                <TableCell align="right">{product.quantity}</TableCell>
+                <TableCell align="right">
+                  <Chip
+                    label={product.quantity}
+                    color={getQuantityChipColor(product.quantity)}
+                    size="small"
+                  />
+                </TableCell>
                 <TableCell align="right">{formatPrice(product.price)}</TableCell>
-                <TableCell align="center">
+                <TableCell align="left">
                   <Chip
                     label={getStatusLabel(product.status)}
                     color={product.status === 'Available' ? 'success' : 'error'}
@@ -139,6 +160,7 @@ const ProductTable = ({ onProductSelect }) => {
         </Table>
       </TableContainer>
 
+      {/* Pagination */}
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"

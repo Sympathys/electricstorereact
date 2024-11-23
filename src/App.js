@@ -22,7 +22,7 @@ import CartPage from "./Pages/Cart/CartPage";
 import CheckoutPage from "./Pages/Checkout/CheckoutPage";
 import ProductListing from "./Pages/Product/ProductListing";
 import VerificationSuccess from "./Pages/VertificationSuccess";
-import OrderPending from "./Pages/Checkout/OderPending";
+import OrderPending from "./Pages/Checkout/OrderPending";
 import BankTransferQRCode from "./Pages/Checkout/BankTransferQRCode";
 import OrdersPage from "./Pages/Order/OrdersPage";
 import OrderDetailPage from "./Pages/Order/OrderDetailPage";
@@ -92,7 +92,7 @@ function App() {
           <Route path ="/CheckoutPage" element = {<CheckoutPage/>}/>
           <Route path = "/products/:type" element = {<ProductListing/>} />
           <Route path = "/info" element = {<InfoUser/>}/>
-          <Route path = "/order-pending" element = {<OrderPending/>} />
+          <Route path = "/order-pending/:orderIdParams" element = {<OrderPending/>} />
           <Route path="/bank-transfer-qr-code" element={<BankTransferQRCode />} />
           <Route path="/orders-page" element = {<OrdersPage/>} />
           <Route path="/OrderDetail/:id" element = {<OrderDetailPage/>} />

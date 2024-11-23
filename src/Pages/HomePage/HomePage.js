@@ -19,9 +19,9 @@ const HomePage = () => {
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        window.alert(`Error: ${error.response.data.message}`);
+        console.log(`Error: ${error.response.data.message}`);
       } else {
-        window.alert("Error: Something went wrong");
+        console.log("Error: Something went wrong");
       }
       console.log(error);
     }
@@ -39,9 +39,12 @@ const HomePage = () => {
     navigate(`/products/${type}`);
   };
 
+  // Lọc sản phẩm trạng thái Available
+  const availableProducts = product.filter(item => item.status === 'Available');
+
   // Logic phân trang
-  const totalPages = Math.ceil(product.length / itemsPerPage);
-  const currentProducts = product.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(availableProducts.length / itemsPerPage);
+  const currentProducts = availableProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
