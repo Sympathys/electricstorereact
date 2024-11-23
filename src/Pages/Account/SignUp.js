@@ -137,7 +137,7 @@ const SignUp = () => {
       </button>
       <p className="text-sm">
         Đã có tài khoản?{" "}
-        <a href="#" className="text-pink-500 font-bold">
+        <a href="/login" className="text-pink-500 font-bold">
           Đăng nhập ngay
         </a>
       </p>

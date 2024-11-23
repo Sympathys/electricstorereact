@@ -29,7 +29,7 @@ import OrderDetailPage from "./Pages/Order/OrderDetailPage";
 import ResetPassword from "./Pages/Account/ResetPassword";
 import ChangePassword from "./Pages/Account/ChangePassword";
 import StatisticsManagement from "./Pages/Admin/StatisticsManagement/StatisticsManagement";
-
+import ExpressCompanyManagement from "./Pages/Admin/ExpressCompanyManagement/ExpressCompanyManagement";
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.data.role || "admin";
   console.log(role);
@@ -87,7 +87,7 @@ function App() {
           />
           <Route path="/UserManagement" element={<UserManagement/>}/>
           <Route path="/AccountManagement" element={<AccountManagement/>}/>
-
+          <Route path="/ExpressCompanyManagement" element={<ExpressCompanyManagement/>}/>
           <Route path ="/CartPage" element = {<CartPage/>}/>
           <Route path ="/CheckoutPage" element = {<CheckoutPage/>}/>
           <Route path = "/products/:type" element = {<ProductListing/>} />
