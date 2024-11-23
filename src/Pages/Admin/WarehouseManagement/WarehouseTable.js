@@ -33,12 +33,12 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
   };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Typography variant="h5" component="h2" sx={{ p: 2, fontWeight: 'bold' }}>
-        Danh sách kho hàng
+    <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 2, fontWeight: 'bold', textAlign: 'center' }}>
+        Bảng danh sách kho hàng
       </Typography>
       
-      <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
+      <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
         <TextField
           label="Tìm kiếm"
           variant="outlined"
@@ -53,7 +53,7 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
           value={searchBy}
           onChange={(e) => setSearchBy(e.target.value)}
           size="small"
-          sx={{ width: 180 }}
+          sx={{ width: 200 }}
         >
           <MenuItem value="nameOfProduct">Tên sản phẩm</MenuItem>
           <MenuItem value="idProduct">Mã sản phẩm</MenuItem>
@@ -63,15 +63,15 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
         </TextField>
       </Box>
 
-      <TableContainer sx={{ maxHeight: 440, overflowY: 'auto' }}>
+      <TableContainer sx={{ maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Mã SP</TableCell>
-              <TableCell>Tên sản phẩm</TableCell>
-              <TableCell align="right">Số lượng</TableCell>
-              <TableCell>Mã nhà cung cấp</TableCell>
-              <TableCell>Tên nhà cung cấp</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Mã sản phẩm</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 120 }}>Tên sản phẩm</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 100, textAlign: 'right' }}>Số lượng</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Mã nhà cung cấp</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 150 }}>Tên nhà cung cấp</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -81,13 +81,17 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
                   key={index} 
                   hover 
                   onClick={() => handleRowClick(warehouse)}
-                  sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+                  sx={{ 
+                    cursor: 'pointer', 
+                    '&:hover': { backgroundColor: '#f5f5f5' }, 
+                    height: 50 
+                  }}
                 >
-                  <TableCell>{warehouse.idProduct}</TableCell>
-                  <TableCell>{warehouse.nameOfProduct}</TableCell>
-                  <TableCell align="right">{warehouse.quantity}</TableCell>
-                  <TableCell>{warehouse.idProvider}</TableCell>
-                  <TableCell>{warehouse.nameOfProvider}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{warehouse.idProduct}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{warehouse.nameOfProduct}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'right' }}>{warehouse.quantity}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{warehouse.idProvider}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{warehouse.nameOfProvider}</TableCell>
                 </TableRow>
               ))
             ) : (

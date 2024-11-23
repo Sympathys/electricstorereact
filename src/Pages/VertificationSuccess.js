@@ -7,7 +7,7 @@ const VerificationSuccess = () => {
 
   useEffect(() => {
     // Hiển thị thông báo thành công hoặc thực hiện các bước tiếp theo
-    alert("Your account has been successfully verified!");
+    // alert("Your account has been successfully verified!");
     // Chuyển hướng người dùng đến trang đăng nhập hoặc trang chính
     navigate("/login");
   }, [navigate]);
