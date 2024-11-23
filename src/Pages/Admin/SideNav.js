@@ -14,6 +14,7 @@ const SideNav = () => {
     { path: '/OrderManagement', label: 'Quản lý hóa đơn' },
     { path: '/UserManagement', label: 'Quản lý thông tin tài khoản' },
     { path: '/AccountManagement', label: 'Quản lý tài khoản' },
+    { path: '/ExpressCompanyManagement', label: 'Quản lý công ty giao hàng'},
     { path: '/StatisticsManagement', label: 'Thống kê' },
   ];
 
