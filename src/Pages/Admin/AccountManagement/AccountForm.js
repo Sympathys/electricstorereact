@@ -7,18 +7,33 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
     email: '',
     password: '',
     role: 'user',
-    status: 'Active', // Default status
+    status: 'Active',
+    company: '', // Single company selection for combobox
   });
   const [error, setError] = useState('');
+  const [companies, setCompanies] = useState([]); // Array to store available companies
 
+  // Fetch the list of companies when the component mounts
   useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await clientAPI.service('expressCompany').find(); // API endpoint to get companies
+        setCompanies(response.data); // Assuming the response contains an array of companies
+      } catch (error) {
+        setError('Không thể tải danh sách công ty!');
+      }
+    };
+
+    fetchCompanies();
+
     if (selectedAccount) {
       setAccount({
         username: selectedAccount.username,
-        email: selectedAccount.email, // Do not allow email to be changed
+        email: selectedAccount.email,
         password: '', // Do not display password
         role: selectedAccount.role,
-        status: selectedAccount.isActive ? 'Active' : 'Inactive', // Status based on isActive
+        status: selectedAccount.isActive ? 'Active' : 'Inactive',
+        company: selectedAccount.company || '', // Single company for combobox
       });
     } else {
       resetForm();
@@ -36,27 +51,27 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-  
+
     // Kiểm tra các trường bắt buộc
     if (!account.username || !account.email || !account.password || !account.role || !account.status) {
       setError('Vui lòng điền đầy đủ thông tin tài khoản!');
       return;
     }
-  
+
     // Chuẩn bị dữ liệu để gửi lên server
     const formData = {
-      username: account.username,  // Tên tài khoản
-      email: account.email, // Email tài khoản
-      password: account.password, // Mật khẩu
-      role: account.role, // Vai trò (role)
-      isActive: account.status === 'Active', // Trạng thái hoạt động (chuyển sang boolean)
+      username: account.username,
+      email: account.email,
+      password: account.password,
+      role: account.role,
+      isActive: account.status === 'Active',
+      idCompany: account.role === 'staff' ? account.company : undefined, // Chỉ gửi công ty khi là staff
     };
-  
+
     try {
-      // Gửi yêu cầu tạo tài khoản
       await clientAPI.create(formData);
-      resetForm();  // Đặt lại form
-      if (onRefresh) onRefresh();  // Refresh nếu cần
+      resetForm();
+      if (onRefresh) onRefresh();
     } catch (error) {
       setError('Có lỗi xảy ra khi thêm tài khoản!');
     }
@@ -71,11 +86,11 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
       return;
     }
 
-    // Prepare the data to send for updating
     const formData = {
       username: account.username,
       role: account.role,
       isActive: account.status === 'Active',
+      company: account.role === 'staff' ? account.company : undefined,
     };
 
     if (account.password) {
@@ -109,6 +124,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
       password: '',
       role: 'user',
       status: 'Active',
+      company: '', // Reset to empty for combobox
     });
     setError('');
   };
@@ -122,7 +138,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
           { label: 'Tài khoản', type: 'text', name: 'username' },
           { label: 'Email', type: 'email', name: 'email', disabled: !!selectedAccount },
           { label: 'Mật khẩu', type: 'password', name: 'password', disabled: !!selectedAccount },
-          { label: 'Quyền', type: 'select', name: 'role', options: [{ value: 'user', label: 'User' }, { value: 'admin', label: 'Admin' }] },
+          { label: 'Quyền', type: 'select', name: 'role', options: [{ value: 'user', label: 'User' }, { value: 'admin', label: 'Admin' }, { value: 'staff', label: 'Staff' }] },
           { label: 'Trạng thái', type: 'select', name: 'status', options: [{ value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' }] },
         ].map(({ label, type, options, disabled, ...inputProps }, index) => (
           <div key={index} className="mb-3">
@@ -154,6 +170,26 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
             )}
           </div>
         ))}
+
+        {/* Company field with combobox for staff role */}
+        {account.role === 'staff' && (
+          <div className="mb-3">
+            <label className="block mb-1 text-sm font-medium">Công ty</label>
+            <select
+              name="company"
+              onChange={handleChange}
+              value={account.company || ''}
+              className="border py-1 px-2 w-full text-sm rounded-md"
+            >
+              <option value="">Chọn công ty</option>
+              {companies.map((company) => (
+                <option key={company.idCompany} value={company.idCompany}>
+                  {company.nameOfCompany}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </form>
 
       <div className="flex space-x-3 mt-4">

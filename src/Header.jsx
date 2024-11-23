@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clientAPI from "./client-api/rest-client";
-
 const Header = () => {
   const [user, setUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
