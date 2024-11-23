@@ -12,6 +12,11 @@ import {
   TextField,
   MenuItem,
   TablePagination,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
   Chip,
 } from '@mui/material';
 
@@ -61,7 +66,6 @@ const OrderTable = ({ orders, onOrderSelect }) => {
     setSelectedOrder(null);
   };
 
-  // Filter orders based on the selected criteria
   const filteredOrders = orders.filter((order) => {
     const searchMatch =
       order[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase());
@@ -150,14 +154,14 @@ const OrderTable = ({ orders, onOrderSelect }) => {
           variant="outlined"
           size="small"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearch}
           sx={{ flex: 1 }}
         />
         <TextField
           select
           label="Tìm kiếm theo"
           value={searchBy}
-          onChange={(e) => setSearchBy(e.target.value)}
+          onChange={handleSearchByChange}
           size="small"
           sx={{ width: 200 }}
         >
@@ -175,7 +179,7 @@ const OrderTable = ({ orders, onOrderSelect }) => {
               label="Từ Ngày"
               type="date"
               value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
+              onChange={handleFromDateChange}
               size="small"
               sx={{ width: 200 }}
               InputLabelProps={{ shrink: true }}
@@ -184,7 +188,7 @@ const OrderTable = ({ orders, onOrderSelect }) => {
               label="Đến Ngày"
               type="date"
               value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
+              onChange={handleToDateChange}
               size="small"
               sx={{ width: 200 }}
               InputLabelProps={{ shrink: true }}
@@ -194,7 +198,7 @@ const OrderTable = ({ orders, onOrderSelect }) => {
       </Box>
 
       {/* Bảng danh sách đơn hàng */}
-      <TableContainer sx={{ maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
+      <TableContainer sx={{ maxHeight: 440, overflowY: 'auto' }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
@@ -231,46 +235,15 @@ const OrderTable = ({ orders, onOrderSelect }) => {
                   </TableCell>
                   <TableCell>{order.totalPrice?.toLocaleString()} VNĐ</TableCell>
                   <TableCell>{order.payment_method}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={order.isPayment ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                      color={order.isPayment ? 'success' : 'warning'}
-                      size="small"
-                      sx={{
-                        backgroundColor: order.isPayment ? '#006600' : '#FF0000',
-                        color: 'white',
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={order.status}
-                      color={
-                        order.status === 'Đã giao'
-                          ? 'success'
-                          : order.status === 'Đã hủy'
-                          ? 'error'
-                          : 'primary'
-                      }
-                      size="small"
-                      sx={{
-                        backgroundColor:
-                          order.status === 'Đã giao'
-                            ? '#006600'
-                            : order.status === 'Đã hủy'
-                            ? '#FF0000'
-                            : '#FFCC00',
-                        color: 'white',
-                      }}
-                    />
-                  </TableCell>
+                  <TableCell>{order.isPayment ? 'Đã thanh toán' : 'Chưa thanh toán'}</TableCell>
+                  <TableCell>{getOrderStatusChip(order.status)}</TableCell>
                 </TableRow>
               ))}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* Phân trang */}
+      {/* Pagination */}
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
@@ -279,8 +252,53 @@ const OrderTable = ({ orders, onOrderSelect }) => {
         page={page}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        labelRowsPerPage="Số hàng mỗi trang"
       />
+
+      {/* Modal chi tiết đơn hàng */}
+      {selectedOrder && (
+        <Dialog open={Boolean(selectedOrder)} onClose={handleCloseModal}>
+          <DialogTitle>
+            Thông Tin Đơn Hàng
+            <Button onClick={handleCloseModal} sx={{ position: 'absolute', right: 8, top: 8 }}>
+              X
+            </Button>
+          </DialogTitle>
+          <DialogContent>
+            {selectedOrder && (
+              <>
+                <Typography variant="h6">Thông Tin Sản Phẩm</Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Tên Sản Phẩm</TableCell>
+                        <TableCell>Số Lượng</TableCell>
+                        <TableCell>Đơn Giá</TableCell>
+                        <TableCell>Tổng Giá</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedOrder.products.map((product, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{product.nameOfProduct}</TableCell>
+                          <TableCell>{product.quantity}</TableCell>
+                          <TableCell>{product.price?.toLocaleString()} VNĐ</TableCell>
+                          <TableCell>{(product.quantity * product.price)?.toLocaleString()} VNĐ</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseModal} color="primary">
+              Đóng
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Paper>
   );
 };

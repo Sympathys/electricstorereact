@@ -15,15 +15,37 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
     isPayment: false,
     idCart: '',
     status: 'Chờ thanh toán',
+    deliveryStaff: null, // Thêm trường deliveryStaff
   });
 
   const [error, setError] = useState('');
+  const [staffList, setStaffList] = useState([]); // Danh sách nhân viên giao hàng
 
   // Function to format date to 'YYYY-MM-DD'
   const formatDate = (date) => {
     const d = new Date(date);
     return d.toISOString().split('T')[0]; // Converts to YYYY-MM-DD format
   };
+
+  useEffect(() => {
+    // Lấy thông tin nhân viên giao hàng từ API
+    const fetchStaffList = async () => {
+      try {
+        const response = await clientAPI.service('staff').find(); // Đảm bảo API path chính xác
+        if (response.success) {
+          setStaffList(response.data); // Giả sử data chứa danh sách nhân viên
+        } else {
+          console.error('Error fetching staff list:', response.message);
+          setError(response.message);
+        }
+      } catch (error) {
+        console.error('Error fetching staff list:', error);
+        setError('An error occurred while fetching staff list!');
+      }
+    };
+
+    fetchStaffList();
+  }, []);
 
   useEffect(() => {
     if (selectedOrder) {
@@ -40,6 +62,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
         isPayment: selectedOrder.isPayment,
         idCart: selectedOrder.idCart,
         status: selectedOrder.status,
+        deliveryStaff: selectedOrder.idStaff || null, // Lấy nhân viên giao hàng nếu có
       });
     } else {
       resetForm();
@@ -73,7 +96,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
 
     try {
       if (orderId) {
-        const response = await clientAPI.patch(`${orderId}`, order); // Use correct API path
+        const response = await clientAPI.service('order').patch(order); // Use correct API path
         if (response.success) {
           console.log('Order updated successfully');
           if (onRefresh) onRefresh();
@@ -82,7 +105,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
           setError(response.message);
         }
       } else {
-        const response = await clientAPI.post('order', order); // Use correct API path for new order
+        const response = await clientAPI.service('order').create(order); // Use correct API path for new order
         if (response.success) {
           console.log('Order added successfully');
           if (onRefresh) onRefresh();
@@ -100,7 +123,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
   const handleDelete = async () => {
     if (!selectedOrder) return;
     try {
-      await clientAPI.delete(`order/${order._id}`); // Use _id for delete action
+      await clientAPI.service('order').remove(order._id); // Use _id for delete action
       console.log('Order has been deleted successfully');
       resetForm();
       if (onRefresh) onRefresh();
@@ -124,6 +147,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
       isPayment: false,
       idCart: '',
       status: 'Chờ thanh toán',
+      deliveryStaff: null, // Clear deliveryStaff
     });
     setError('');
   };
@@ -151,18 +175,19 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
             />
           </div>
         ))}
-  
+
         {/* Payment Method Dropdown */}
         <div className="mb-3">
-          <label className="block mb-1 text-sm">Payment Method</label>
+          <label className="block mb-1 text-sm">Phương thức thanh toán</label>
           <select
-            name="Phương thức thanh toán"
+            name="payment_method"
             value={order.payment_method}
             onChange={handleChange}
             className="border py-1 px-2 w-full"
           >
             <option value="Bank">Bank</option>
             <option value="Cod">Cod</option>
+            <option value="Momo">Momo</option>
           </select>
         </div>
   
@@ -183,21 +208,36 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
             <option value="Đã hủy">Đã hủy</option>
           </select>
         </div>
+
+        {/* Delivery Staff Dropdown */}
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Nhân viên giao hàng</label>
+          <select
+            name="deliveryStaff"
+            value={order.deliveryStaff || ''}
+            onChange={handleChange}
+            className="border py-1 px-2 w-full"
+          >
+            <option value="">Chọn nhân viên giao hàng</option>
+            {staffList.map((staff) => (
+              <option key={staff._id} value={staff._id}>
+                {staff.name}
+              </option>
+            ))}
+          </select>
+        </div>
   
         {/* Action Buttons */}
         <div className="flex space-x-4 mt-4">
           {[ 
             { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500', disabled: false },
-            { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedOrder },
-            { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !selectedOrder },
-            { label: 'Làm mới', onClick: () => { resetForm(); onRefresh(); }, color: 'blue-500' },
-            { label: 'Save', onClick: handleSubmit, color: 'purple-500', disabled: !order.nameCustomer || !order.phone || !order.totalPrice }, // Disabled if fields are empty
-          ].map(({ label, onClick, color, disabled }, idx) => (
+            { label: 'Sửa', onClick: handleSubmit, color: 'blue-500', disabled: !order._id },
+            { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !order._id },
+          ].map(({ label, onClick, color, disabled }, index) => (
             <button
-              key={idx}
-              type="button"
+              key={index}
               onClick={onClick}
-              className={`bg-${color} text-white px-3 py-1 text-sm rounded ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-4 py-2 text-white bg-${color} rounded-md ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={disabled}
             >
               {label}
@@ -207,7 +247,6 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
       </form>
     </div>
   );
-  
 };
 
 export default OrderForm;
