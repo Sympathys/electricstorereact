@@ -8,7 +8,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
     password: '',
     role: 'user',
     status: 'Active',
-    company: '', // Single company selection for combobox
+    idCompany: '', // Single company selection for combobox
   });
   const [error, setError] = useState('');
   const [companies, setCompanies] = useState([]); // Array to store available companies
@@ -33,7 +33,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
         password: '', // Do not display password
         role: selectedAccount.role,
         status: selectedAccount.isActive ? 'Active' : 'Inactive',
-        company: selectedAccount.company || '', // Single company for combobox
+        idCompany: selectedAccount.idCompany || '', // Single company for combobox
       });
     } else {
       resetForm();
@@ -65,10 +65,11 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
       password: account.password,
       role: account.role,
       isActive: account.status === 'Active',
-      idCompany: account.role === 'staff' ? account.company : undefined, // Chỉ gửi công ty khi là staff
+      idCompany: account.role === 'staff' ? account.idCompany : undefined, // Chỉ gửi công ty khi là staff
     };
 
     try {
+      console.log(formData);
       const response = await clientAPI.service('account').create(formData);
       resetForm();
       if (onRefresh) onRefresh();
@@ -90,7 +91,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
       username: account.username,
       role: account.role,
       isActive: account.status === 'Active',
-      company: account.role === 'staff' ? account.company : undefined,
+      idCompany: account.role === 'staff' ? account.idCompany : undefined,
     };
 
     if (account.password) {
@@ -124,7 +125,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
       password: '',
       role: 'user',
       status: 'Active',
-      company: '', // Reset to empty for combobox
+      idCompany: '', // Reset to empty for combobox
     });
     setError('');
   };
@@ -138,7 +139,7 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
           { label: 'Tài khoản', type: 'text', name: 'username' },
           { label: 'Email', type: 'email', name: 'email', disabled: !!selectedAccount },
           { label: 'Mật khẩu', type: 'password', name: 'password', disabled: !!selectedAccount },
-          { label: 'Quyền', type: 'select', name: 'role', options: [{ value: 'user', label: 'User' }, { value: 'admin', label: 'Admin' }, { value: 'staff', label: 'Staff' }] },
+          { label: 'Quyền', type: 'select', name: 'role', disabled: !!selectedAccount, options: [{ value: 'user', label: 'User' }, { value: 'admin', label: 'Admin' }, { value: 'staff', label: 'Staff' }] },
           { label: 'Trạng thái', type: 'select', name: 'status', options: [{ value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' }] },
         ].map(({ label, type, options, disabled, ...inputProps }, index) => (
           <div key={index} className="mb-3">
@@ -171,17 +172,16 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
           </div>
         ))}
 
-        {/* Company field with combobox for staff role */}
         {account.role === 'staff' && (
           <div className="mb-3">
             <label className="block mb-1 text-sm font-medium">Công ty</label>
             <select
-              name="company"
+              name="idCompany"
               onChange={handleChange}
-              value={account.company || ''}
+              value={account.idCompany || ''}
               className="border py-1 px-2 w-full text-sm rounded-md"
             >
-              <option value="">Chọn công ty</option>
+              <option value="">{`Chọn công ty`}</option>
               {companies.map((company) => (
                 <option key={company.idCompany} value={company.idCompany}>
                   {company.nameOfCompany}

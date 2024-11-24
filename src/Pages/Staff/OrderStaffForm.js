@@ -6,13 +6,12 @@ const OrderStaffForm = () => {
     const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
-    const staffId = user?.data._id;
+    const id = user?.idUser;
 
     const loadAssignedOrders = async () => {
         try {
-            const response = await clientAPI.service('order').find({
-                query: { assignedStaffId: staffId }
-            });
+            console.log(id);
+            const response = await clientAPI.service('services/staffOrder').get(id);
             if (Array.isArray(response.data)) {
                 setOrders(response.data);
             } else {
@@ -39,7 +38,7 @@ const OrderStaffForm = () => {
     return (
         <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="p-4">
-                <h2 className="text-gray-900 text-2xl font-bold mb-4">Đơn hàng được giao</h2>
+                <h2 className="text-gray-900 text-2xl font-bold mb-4">Đơn hàng cần giao</h2>
                 {orders.length === 0 ? (
                     <p className="text-gray-600">Không có đơn hàng nào được giao cho bạn.</p>
                 ) : (
