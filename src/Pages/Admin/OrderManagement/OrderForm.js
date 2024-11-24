@@ -5,7 +5,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
   const [order, setOrder] = useState({
     _id: '',
     idCustomer: '',
-    nameCustomer: '',
+    nameOfCustomer: '',
     phone: '',
     address: '',
     dateOrder: '',
@@ -52,7 +52,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
       setOrder({
         _id: selectedOrder._id,
         idCustomer: selectedOrder.idCustomer,
-        nameCustomer: selectedOrder.nameCustomer,
+        nameOfCustomer: selectedOrder.nameOfCustomer,
         phone: selectedOrder.phone,
         address: selectedOrder.address,
         dateOrder: selectedOrder.dateOrder ? formatDate(selectedOrder.dateOrder) : '',
@@ -96,7 +96,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
 
     try {
       if (orderId) {
-        const response = await clientAPI.service('order').patch(order); // Use correct API path
+        const response = await clientAPI.service('order').patch(orderId, order); // Use correct API path
         if (response.success) {
           console.log('Order updated successfully');
           if (onRefresh) onRefresh();
@@ -137,7 +137,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
     setOrder({
       _id: '',
       idCustomer: '',
-      nameCustomer: '',
+      nameOfCustomer: '',
       phone: '',
       address: '',
       dateOrder: '', // Ensure this is cleared correctly
@@ -157,7 +157,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex-grow">
         {[ 
-          { label: 'Tên Khách hàng', type: 'text', name: 'nameCustomer', required: true },
+          { label: 'Tên Khách hàng', type: 'text', name: 'nameOfCustomer', required: true },
           { label: 'Số điện thoại', type: 'text', name: 'phone', required: true },
           { label: 'Đìa chỉ', type: 'text', name: 'address', required: true },
           { label: 'Ngày đặt', type: 'date', name: 'dateOrder', required: true },
