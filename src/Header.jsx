@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clientAPI from "./client-api/rest-client";
+
 const Header = () => {
   const [user, setUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [products, setProducts] = useState([]);
-  const dropdownRef = useRef(null); // Tham chiếu đến dropdown
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,7 +46,12 @@ const Header = () => {
   }, [searchTerm, products]);
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.trim() === "") {
+      setFilteredProducts([]);
+    }
   };
 
   const handleLogout = () => {
@@ -69,13 +75,9 @@ const Header = () => {
     setIsDropdownOpen((prevState) => !prevState);
   };
 
-  // Đóng dropdown khi nhấn ra ngoài
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
     };
@@ -85,6 +87,7 @@ const Header = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
   return (
     <header className="w-full bg-gray-100 border-b">
       <div className="flex items-center justify-between py-2 px-4 bg-white">
@@ -118,9 +121,9 @@ const Header = () => {
                   key={product.id}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    setSearchTerm(product.nameOfProduct);
-                    setFilteredProducts([]);
-                    navigate(`/product/${product._id}`);
+                    setSearchTerm(""); // Xóa nội dung ô tìm kiếm
+                    setFilteredProducts([]); // Xóa danh sách gợi ý
+                    navigate(`/product/${product._id}`); // Điều hướng đến trang sản phẩm
                   }}
                 >
                   {product.nameOfProduct}
@@ -153,47 +156,44 @@ const Header = () => {
                   <Link
                     to="/info"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
+                    onClick={() => setIsDropdownOpen(false)}
                   >
                     Thông tin cá nhân
                   </Link>
                   <Link
                     to="/orders-page"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
+                    onClick={() => setIsDropdownOpen(false)}
                   >
                     Xem đơn đặt hàng
                   </Link>
                   <Link
                     to="/settings"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
+                    onClick={() => setIsDropdownOpen(false)}
                   >
                     Cài đặt
                   </Link>
                   <Link
                     to="/ChangePassword"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
+                    onClick={() => setIsDropdownOpen(false)}
                   >
                     Đổi mật khẩu
                   </Link>
-
-                  {/* Thêm nút trang quản lý admin nếu vai trò là admin */}
                   {user?.role === "admin" && (
                     <Link
                       to="/nav"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsDropdownOpen(false)} // Đóng dropdown
+                      onClick={() => setIsDropdownOpen(false)}
                     >
                       Trang quản lý Admin
                     </Link>
                   )}
-
                   <button
                     onClick={() => {
                       handleLogout();
-                      setIsDropdownOpen(false); // Đóng dropdown
+                      setIsDropdownOpen(false);
                     }}
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
@@ -215,17 +215,7 @@ const Header = () => {
 
       <div className="bg-pink-500 text-white py-2">
         <div className="container mx-auto flex justify-between items-center px-4">
-          <nav className="flex space-x-6">
-            <Link to="/HomePage" className="hover:underline">
-              Trang chủ
-            </Link>
-            <a href="#" className="hover:underline">
-              Sản phẩm
-            </a>
-            <a href="#" className="hover:underline">
-              Sản phẩm
-            </a>
-          </nav>
+          <nav className="flex space-x-6"></nav>
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <i className="fas fa-envelope"></i>

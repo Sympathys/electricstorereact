@@ -37,7 +37,7 @@ const LogIn = () => {
           // Lưu thông tin người dùng và token vào localStorage
           localStorage.setItem('user', JSON.stringify(data)); // Lưu thông tin người dùng
           localStorage.setItem('userToken', data.accessToken); // Lưu token
-            navigate(`/HomePage`);
+          navigate(`/HomePage`);
       }catch (error) {
         console.error("Error during login:", error);
         console.error("Error details:", error.response);
