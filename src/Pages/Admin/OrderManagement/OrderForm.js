@@ -15,7 +15,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
     isPayment: false,
     idCart: '',
     status: 'Chờ thanh toán',
-    deliveryStaff: null, // Thêm trường deliveryStaff
+    idStaff: null, // Thêm trường deliveryStaff
   });
 
   const [error, setError] = useState('');
@@ -62,7 +62,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
         isPayment: selectedOrder.isPayment,
         idCart: selectedOrder.idCart,
         status: selectedOrder.status,
-        deliveryStaff: selectedOrder.idStaff || null, // Lấy nhân viên giao hàng nếu có
+        idStaff: selectedOrder.idStaff || null, // Lấy nhân viên giao hàng nếu có
       });
     } else {
       resetForm();
@@ -147,7 +147,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
       isPayment: false,
       idCart: '',
       status: 'Chờ thanh toán',
-      deliveryStaff: null, // Clear deliveryStaff
+      idStaff: null, // Clear deliveryStaff
     });
     setError('');
   };
@@ -159,7 +159,7 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
         {[ 
           { label: 'Tên Khách hàng', type: 'text', name: 'nameOfCustomer', required: true },
           { label: 'Số điện thoại', type: 'text', name: 'phone', required: true },
-          { label: 'Đìa chỉ', type: 'text', name: 'address', required: true },
+          { label: 'Địa chỉ', type: 'text', name: 'address', required: true },
           { label: 'Ngày đặt', type: 'date', name: 'dateOrder', required: true },
           { label: 'Ngày nhận', type: 'date', name: 'dateReceived' },
           { label: 'Tổng tiền', type: 'number', name: 'totalPrice', required: true },
@@ -213,8 +213,8 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
         <div className="mb-3">
           <label className="block mb-1 text-sm">Nhân viên giao hàng</label>
           <select
-            name="deliveryStaff"
-            value={order.deliveryStaff || ''}
+            name="idStaff"
+            value={order.idStaff || ''}
             onChange={handleChange}
             className="border py-1 px-2 w-full"
           >

@@ -30,6 +30,7 @@ import ResetPassword from "./Pages/Account/ResetPassword";
 import ChangePassword from "./Pages/Account/ChangePassword";
 import StatisticsManagement from "./Pages/Admin/StatisticsManagement/StatisticsManagement";
 import ExpressCompanyManagement from "./Pages/Admin/ExpressCompanyManagement/ExpressCompanyManagement";
+import OrderStaffForm from "./Pages/Staff/OrderStaffForm";
 function App() {
   const role = JSON.parse(localStorage.getItem('user'))?.data.role || "admin";
   console.log(role);
@@ -98,6 +99,7 @@ function App() {
           <Route path="/OrderDetail/:id" element = {<OrderDetailPage/>} />
 
           <Route path="/product/:id" element={<ProductDetail/>}/>
+          <Route path="/order-staff-form" element={<OrderStaffForm/>}/>
 
           <Route 
             path="/nav" 
