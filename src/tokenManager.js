@@ -18,7 +18,7 @@ const refreshUserToken = async () => {
         // Cập nhật user trong localStorage (bao gồm cả accessToken mới)
         const storedUser = JSON.parse(localStorage.getItem("user"));
         if (storedUser) {
-          storedUser.acctoken = newAccessToken;  // Cập nhật accessToken vào user
+          storedUser.accessToken = newAccessToken;  // Cập nhật accessToken vào user
           localStorage.setItem("user", JSON.stringify(storedUser));  // Lưu lại user mới
         }
   
