@@ -37,7 +37,7 @@ const LogIn = () => {
           localStorage.setItem('user', JSON.stringify(data)); // Lưu thông tin người dùng
           localStorage.setItem('userToken', data.accessToken); // Lưu token
           if(userRole === "staff"){
-            navigate(`/order-staff-form`);
+            navigate(`/orders-staff-page`);
             return;
           }
           navigate(`/HomePage`);

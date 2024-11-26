@@ -97,9 +97,10 @@ function App() {
           <Route path="/bank-transfer-qr-code" element={<BankTransferQRCode />} />
           <Route path="/orders-page" element = {<OrdersPage/>} />
           <Route path="/OrderDetail/:id" element = {<OrderDetailPage/>} />
+          <Route path="/OrderDetailStaff/:id" element = {<OrderDetailPage/>} />
 
           <Route path="/product/:id" element={<ProductDetail/>}/>
-          <Route path="/order-staff-form" element={<OrderStaffForm/>}/>
+          <Route path="/orders-staff-page" element={<OrderStaffForm/>}/>
 
           <Route 
             path="/nav" 

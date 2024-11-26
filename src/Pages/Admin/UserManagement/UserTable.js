@@ -17,12 +17,19 @@ const UserTable = ({ onUserSelect }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await clientAPI.service('user').find();
-        setUsers(response.data);
-
+        // Fetch users and staff data
+        const [response, response2] = await Promise.all([
+          clientAPI.service('user').find(),
+          clientAPI.service('staff').find(),
+        ]);
+  
+        // Merge the data from both responses
+        const allUsers = [...response.data, ...response2.data];
+        setUsers(allUsers);
+  
         // Fetch accounts for each user by idAccount
         const accountsData = {};
-        for (let user of response.data) {
+        for (let user of allUsers) {
           const accountResponse = await clientAPI.service('account').get(user.idAccount);
           accountsData[user.idAccount] = accountResponse.data;
         }
@@ -32,6 +39,7 @@ const UserTable = ({ onUserSelect }) => {
         setError('Failed to load users. Please try again later.');
       }
     };
+  
     fetchUsers();
   }, []);
 
@@ -104,9 +112,11 @@ const UserTable = ({ onUserSelect }) => {
           <TableBody>
             {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => {
               const account = accounts[user.idAccount];
-              const role = account ? account.role : 'No Role';  // Fallback if account doesn't have a role
+              const role = account ? account.role : 'No Role'; // Fallback if account doesn't have a role
+              const userWithRole = { ...user, role }; // Combine user data with role
+
               return (
-                <TableRow hover key={user.idAccount} onClick={() => onUserSelect(user)}>
+                <TableRow hover key={user.idAccount} onClick={() => onUserSelect(userWithRole)}>
                   <TableCell>{user.idAccount}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.phone}</TableCell>
