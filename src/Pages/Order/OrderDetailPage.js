@@ -5,13 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 const OrderDetailPage = () => {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
-    const orderId = useParams().id;  // Lấy orderId từ URL
+    const [userRole, setUserRole] = useState(null); // Trạng thái lưu vai trò người dùng
+    const orderId = useParams().id; // Lấy orderId từ URL
     const navigate = useNavigate();
 
+    // Hàm tải chi tiết đơn hàng
     const loadOrderDetails = async () => {
-        console.log(orderId);
         try {
-            const response = await clientAPI.service('services/order').get(orderId); 
+            const response = await clientAPI.service("services/order").get(orderId);
             if (response.data) {
                 setOrder(response.data);
             } else {
@@ -25,8 +26,36 @@ const OrderDetailPage = () => {
         }
     };
 
+    // Hàm kiểm tra vai trò người dùng
+    const checkUserRole = () => {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser && storedUser.data.role) {
+            setUserRole(storedUser.data.role);
+        } else {
+            setUserRole(null);
+        }
+    };
+
+    // Hàm xử lý xuất hóa đơn
+    const handleConfirmOrder = async () => {
+        try {
+            // Gửi yêu cầu xuất hóa đơn qua API
+            const response = await clientAPI.service("services/order").patch(orderId);
+            if (response.success === true) {
+                window.alert("Xác nhận giao hàng thành công!");
+                // Có thể thêm logic tải xuống hóa đơn tại đây
+            } else {
+                window.alert("Không thể xác nhận giao hàng!");
+            }
+        } catch (error) {
+            console.error("Error exporting invoice:", error);
+            window.alert("Lỗi khi xuất hóa đơn.");
+        }
+    };
+
     useEffect(() => {
         loadOrderDetails();
+        checkUserRole();
     }, [orderId]);
 
     if (loading) {
@@ -51,13 +80,21 @@ const OrderDetailPage = () => {
                     <h3 className="text-gray-700 text-xl font-semibold">Thông tin đơn hàng</h3>
                     <p>
                         <strong>Ngày đặt:</strong>{" "}
-                        {new Date(order.dateOrder).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        {new Date(order.dateOrder).toLocaleDateString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                        })}
                     </p>
                     <p>
                         <strong>Ngày nhận:</strong>{" "}
                         {new Date(order.dateReceived) < new Date(order.dateOrder)
                             ? "Chưa nhận hàng"
-                            : new Date(order.dateReceived).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                            : new Date(order.dateReceived).toLocaleDateString("vi-VN", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                              })}
                     </p>
                     <p><strong>Phương thức thanh toán:</strong> {order.payment_method}</p>
                     <p><strong>Trạng thái:</strong> {order.status}</p>
@@ -90,7 +127,7 @@ const OrderDetailPage = () => {
                     <a
                         href="#"
                         onClick={(e) => {
-                            e.preventDefault(); // Ngăn hành vi mặc định
+                            e.preventDefault();
                             navigate("/bank-transfer-qr-code", { state: { linkPayment: order.linkPayment } });
                         }}
                         className="text-blue-500 hover:text-blue-700"
@@ -99,8 +136,24 @@ const OrderDetailPage = () => {
                     </a>
                 )}
                 <div className="mt-6">
+                    {userRole === "staff" && (
+                        <button
+                            onClick={handleConfirmOrder}
+                            className="mr-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-500"
+                        >
+                            Xác nhận đã giao
+                        </button>
+                    )}
                     <button
-                        onClick={() => navigate("/orders-page")}
+                        onClick={() => {
+                            if (userRole === "staff") {
+                                navigate("/orders-staff-page");
+                            } else if (userRole === "user") {
+                                navigate("/orders-page");
+                            } else {
+                                window.alert("Không xác định được quyền người dùng.");
+                            }
+                        }}
                         className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-600"
                     >
                         Quay lại danh sách đơn hàng

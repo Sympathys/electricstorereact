@@ -32,7 +32,7 @@ const OrderStaffForm = () => {
     }, []);
 
     const handleOrderClick = (orderId) => {
-        navigate(`/OrderDetail/${orderId}`);
+        navigate(`/OrderDetailStaff/${orderId}`);
     };
 
     return (

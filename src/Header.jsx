@@ -54,12 +54,14 @@ const Header = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
     if (isConfirmed) {
       try {
+        const data = await clientAPI.service("services/sign-out").create();
         localStorage.removeItem("user");
         localStorage.removeItem("userToken");
+        
         navigate(`/LogIn`);
       } catch (error) {
         console.error("Error during logout:", error);

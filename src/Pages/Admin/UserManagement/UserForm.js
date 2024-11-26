@@ -13,6 +13,7 @@ const UserForm = ({ selectedUser, onRefresh }) => {
     email: '',
     address: '',
     photo: '', // Holds Cloudinary image URL
+    role: '',
   });
 
   const [error, setError] = useState('');
@@ -28,6 +29,7 @@ const UserForm = ({ selectedUser, onRefresh }) => {
         email: selectedUser.email,
         address: selectedUser.address,
         photo: selectedUser.photo, // Lưu ảnh từ user đã chọn
+        role: selectedUser.role,
       });
       setPreviewImage(selectedUser.photo); // Hiển thị ảnh đã lưu nếu có
     } else {
@@ -77,31 +79,34 @@ const UserForm = ({ selectedUser, onRefresh }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Log the data before submitting to check values
+    let targetService = '';
+    // Log dữ liệu để kiểm tra trước khi gửi
     console.log("User Data to Submit:", user);
     
-    // Validation: Ensure required fields are filled (but allow optional fields)
+    // Kiểm tra các trường bắt buộc
     if (!user.name || !user.email) {
       setError('Please fill in all required fields!');
       return;
     }
-    
+    if(user.role === 'staff'){
+      targetService = 'staff';
+    }
+    else {targetService = 'user';}
+  
     try {
       let response;
-      // Remove _id if it exists to prevent sending it in the API request
       const userDataWithoutId = { ...user };
-      delete userDataWithoutId._id; // Make sure no _id is included in the request
-  
-      // Handle create or update based on whether there's a selectedUser
+      delete userDataWithoutId._id; // Loại bỏ _id khỏi dữ liệu gửi
+      // Phân biệt theo role
+      console.log(targetService);
       if (selectedUser && selectedUser._id) {
-        // Update the user based on selectedUser._id
-        response = await clientAPI.service('user').patch(selectedUser._id, userDataWithoutId);
-        console.log('User updated successfully:', response);
+        // Nếu đang sửa, gửi yêu cầu cập nhật
+        response = await clientAPI.service(targetService).patch(selectedUser._id, userDataWithoutId);
+        console.log(`${targetService} updated successfully:`, response);
       } else {
-        // Create a new user
-        response = await clientAPI.service('user').create(userDataWithoutId); // Use data without _id
-        console.log('New user created successfully:', response);
+        // Nếu đang tạo mới, gửi yêu cầu tạo
+        response = await clientAPI.service(targetService).create(userDataWithoutId);
+        console.log(`New ${targetService} created successfully:`, response);
       }
   
       resetForm();
@@ -111,6 +116,7 @@ const UserForm = ({ selectedUser, onRefresh }) => {
       setError('An error occurred while adding/updating the user!');
     }
   };
+  
   
 
   const resetForm = () => {
@@ -122,23 +128,13 @@ const UserForm = ({ selectedUser, onRefresh }) => {
       email: '',
       address: '',
       photo: '', // Reset photo field
+      role:'',
     });
     setPreviewImage(null);
     setError('');
   };
 
-  const handleDelete = async () => {
-    if (!selectedUser) return;
-    try {
-      await clientAPI.delete(`users/${user._id}`); // Use _id for delete action
-      console.log('User has been deleted successfully');
-      resetForm();
-      if (onRefresh) onRefresh();
-    } catch (error) {
-      console.error('Error deleting user:', error.response ? error.response.data : error.message);
-      setError('An error occurred while deleting user!');
-    }
-  };
+  
 
   return (
     <div className="user-form p-4 bg-white border ml-4 h-full flex flex-col">
@@ -186,9 +182,8 @@ const UserForm = ({ selectedUser, onRefresh }) => {
 
         {/* Button actions */}
         <div className="flex space-x-4 mt-4">
-          {[{ label: 'Thêm', onClick: handleSubmit, color: 'yellow-500', disabled: false },
+          {[
             { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedUser },
-            { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !selectedUser },
             { label: 'Làm mới', onClick: () => { resetForm(); onRefresh(); }, color: 'blue-500' },
             { label: 'Save', onClick: handleSubmit, color: 'purple-500', disabled: !user.name || !user.phone || !user.email }].map(({ label, onClick, color, disabled }, idx) => (
               <button
