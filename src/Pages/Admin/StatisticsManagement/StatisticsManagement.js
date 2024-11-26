@@ -137,24 +137,42 @@ const StatisticsManagement = () => {
     <div className="flex h-screen">
       <SideNav isOpen={isMenuOpen} toggleSidebar={toggleMenu} />
       <div className={`bg-white border-r shadow-md h-screen ${isMenuOpen ? 'w-80' : 'w-10'} relative`}>
-        <button onClick={toggleMenu} className="absolute top-266 -right-0 transform -translate-y-1/2 bg-gray-200 p-1 rounded-full hover:bg-gray-300">
+        <button
+          onClick={toggleMenu}
+          className="absolute top-266 -right-0 transform -translate-y-1/2 bg-gray-200 p-1 rounded-full"
+        >
           {isMenuOpen ? '<' : '>'}
         </button>
         {isMenuOpen && (
           <div className="p-4">
-            <button onClick={() => setActiveView('table')} className="w-full bg-pink-500 text-white p-2 rounded-md hover:bg-pink-600 transition">
+            <button
+              onClick={() => setActiveView('table')}
+              className={`w-full ${activeView === 'table' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md`}
+            >
               Thống kê sản phẩm đã bán
             </button>
-            <button onClick={() => setActiveView('topProducts')} className="w-full bg-green-500 text-white p-2 rounded-md hover:bg-green-600 transition mt-2">
+            <button
+              onClick={() => setActiveView('topProducts')}
+              className={`w-full ${activeView === 'topProducts' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+            >
               Sản phẩm bán chạy nhất
             </button>
-            <button onClick={() => setActiveView('lowStock')} className="w-full bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition mt-2">
+            <button
+              onClick={() => setActiveView('lowStock')}
+              className={`w-full ${activeView === 'lowStock' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+            >
               Sản phẩm bán được ít
             </button>
-            <button onClick={() => setActiveView('importTotal')} className="w-full bg-purple-500 text-white p-2 rounded-md hover:bg-purple-600 transition mt-2">
+            <button
+              onClick={() => setActiveView('importTotal')}
+              className={`w-full ${activeView === 'importTotal' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+            >
               Tổng đơn nhập
             </button>
-            <button onClick={() => setActiveView('revenue')} className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition mt-2">
+            <button
+              onClick={() => setActiveView('revenue')}
+              className={`w-full ${activeView === 'revenue' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+            >
               Doanh thu
             </button>
           </div>

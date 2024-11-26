@@ -193,13 +193,14 @@ const AccountForm = ({ selectedAccount, onRefresh }) => {
       </form>
 
       <div className="flex space-x-3 mt-4">
-        <button
-          type="button"
-          onClick={handleCreate}
-          className="bg-yellow-500 text-white px-3 py-1 text-sm rounded-md"
-        >
-          Thêm
-        </button>
+      <button
+        type="button"
+        onClick={handleCreate}
+        className={`bg-yellow-500 text-white px-3 py-1 text-sm rounded-md ${selectedAccount ? 'opacity-50 cursor-not-allowed' : ''}`}
+        disabled={!!selectedAccount}
+      >
+        Thêm
+      </button>
         <button
           type="button"
           onClick={handleUpdate}

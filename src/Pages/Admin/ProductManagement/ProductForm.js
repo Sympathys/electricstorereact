@@ -222,6 +222,7 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
             value={product.quantity || 0}
             onChange={handleChange}
             className="border py-1 px-2 w-full"
+            disabled
           />
         </div>
         <div className="mb-3">
@@ -273,12 +274,13 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
           {uploading && <p className="text-gray-500">Đang tải ảnh lên...</p>}
         </div>
         <div className="flex space-x-4 mt-4">
-          <button
-            type="submit"
-            className="bg-yellow-500 text-white px-3 py-1 text-sm rounded"
-          >
-            Thêm
-          </button>
+        <button
+          type="submit"
+          className={`bg-yellow-500 text-white px-3 py-1 text-sm rounded ${product.idProduct ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={!!product.idProduct}
+        >
+          Thêm
+        </button>
           <button
             type="button"
             onClick={handleSubmit}
@@ -289,7 +291,7 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
           </button>
           <button
             type="button"
-            onClick={resetForm}
+            onClick={() => window.location.reload()}
             className="bg-blue-500 text-white px-3 py-1 text-sm rounded"
           >
             Đặt lại

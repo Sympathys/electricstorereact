@@ -121,7 +121,7 @@ const ExpressCompanyForm = ({ selectedCompany, onRefresh }) => {
         ))}
         <div className="flex space-x-4 mt-4">
           {[
-            { label: "Thêm", onClick: handleAdd, color: "yellow-500" },
+            { label: "Thêm", onClick: handleAdd, color: "yellow-500" ,disabled: !!selectedCompany },
             { label: "Sửa", onClick: handleUpdate, color: "green-500", disabled: !selectedCompany || !selectedCompany._id },
             { label: "Xóa", onClick: handleDelete, color: "red-500", disabled: !selectedCompany || !selectedCompany._id },
             { label: "Làm mới", onClick: () => { resetForm(); if (onRefresh) onRefresh(); }, color: "blue-500" },
