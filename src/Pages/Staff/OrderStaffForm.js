@@ -50,9 +50,9 @@ const OrderStaffForm = () => {
                                     Ngày đặt: {new Date(order.dateOrder).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                 </p>
                                 <p className="text-gray-600 text-sm">
-                                    Ngày giao: {new Date(order.dateDelivery) < new Date(order.dateOrder)
+                                    Ngày giao: {new Date(order.dateReceived) < new Date(order.dateOrder)
                                         ? "Chưa giao hàng"
-                                        : new Date(order.dateDelivery).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                        : new Date(order.dateReceived).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                 </p>
                                 <p className="text-green-500 text-md font-semibold">{order.totalPrice} ₫</p>
                             </div>

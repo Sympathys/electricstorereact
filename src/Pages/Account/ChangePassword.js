@@ -48,7 +48,7 @@ const ChangePassword = () => {
       }
     } catch (error) {
       console.log(error);
-      setErrorMessage("Có lỗi xảy ra khi kết nối đến máy chủ. Vui lòng thử lại sau.");
+      setErrorMessage(error.response.data.message);
     }
   };
 

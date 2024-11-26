@@ -9,16 +9,18 @@ const InfoUser = () => {
     email: "",
     address: "",
     photo: "",
+
   });
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user.idUser;
+    const role = user.data.role;
     console.log(userId);
 
     const fetchUserInfo = async () => {
       try {
-        const data = await clientAPI.service('user').get(userId);
+        const data = await clientAPI.service(role).get(userId);
         setUserInfo(data.data); // Update user info based on API response
       } catch (error) {
         console.error("Error fetching user info:", error);
@@ -38,9 +40,9 @@ const InfoUser = () => {
 
   const handleSave = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
-  
+    const role = user.data.role;
     try {
-      const data = await clientAPI.service('user').patch(user.idUser, userInfo);
+      const data = await clientAPI.service(role).patch(user.idUser, userInfo);
       window.alert("Thông tin người dùng đã được lưu thành công!"); // Success message
     } catch (error) {
       console.error("Error saving user information:", error);

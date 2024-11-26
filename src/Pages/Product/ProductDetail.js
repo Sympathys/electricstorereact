@@ -107,7 +107,11 @@ const ProductDetail = () => {
 
             <button
               onClick={handleAddToCart}
-              className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600 mt-4"
+              className={`py-2 px-4 rounded mt-4 ${
+                productDetail.quantity === 0
+                  ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                  : "bg-pink-500 text-white hover:bg-pink-600"
+              }`}
               disabled={productDetail.quantity === 0}
             >
               Chọn mua

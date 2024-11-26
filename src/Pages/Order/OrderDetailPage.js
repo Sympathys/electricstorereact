@@ -148,7 +148,7 @@ const OrderDetailPage = () => {
                         onClick={() => {
                             if (userRole === "staff") {
                                 navigate("/orders-staff-page");
-                            } else if (userRole === "user") {
+                            } else if (userRole === "user" || userRole === "admin") {
                                 navigate("/orders-page");
                             } else {
                                 window.alert("Không xác định được quyền người dùng.");

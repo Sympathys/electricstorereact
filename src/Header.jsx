@@ -8,6 +8,7 @@ const Header = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const searchRef = useRef(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,12 +46,32 @@ const Header = () => {
     }
   }, [searchTerm, products]);
 
+  useEffect(() => {
+    // Hàm kiểm tra sự kiện click bên ngoài
+    const handleOutsideClick = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setFilteredProducts([]); // Ẩn danh sách sản phẩm khi click ra ngoài
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
     if (value.trim() === "") {
       setFilteredProducts([]);
+    } else {
+      // Mô phỏng tìm kiếm sản phẩm
+      const results = products.data.filter((product) =>
+        product.nameOfProduct.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredProducts(results);
     }
   };
 
@@ -108,7 +129,7 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className="flex items-center w-1/2 relative">
+        <div ref={searchRef} className="flex items-center w-1/2 relative">
           <input
             type="text"
             value={searchTerm}
@@ -162,13 +183,26 @@ const Header = () => {
                   >
                     Thông tin cá nhân
                   </Link>
-                  <Link
-                    to="/orders-page"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Xem đơn đặt hàng
-                  </Link>
+                  {user.role === "user" && (
+                    <Link
+                      to="/orders-page"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Xem đơn đặt hàng
+                    </Link>
+                  )}
+                  {user.role === "staff" && (
+                    <>
+                      <Link
+                        to="/orders-staff-page"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        Quản lý đơn hàng
+                      </Link>
+                    </>
+                  )}
                   <Link
                     to="/settings"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"

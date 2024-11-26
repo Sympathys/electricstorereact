@@ -231,7 +231,20 @@ const CheckoutPage = () => {
             </div>
 
             <div className="mb-4">
-                <h3 className="font-bold text-gray-900">Tổng tiền: {calculateTotalPrice().toLocaleString()} VND</h3>
+                <h3 className="font-bold text-gray-900">Danh sách sản phẩm:</h3>
+                <ul className="list-disc pl-5">
+                    {selectedItems.map((item, index) => (
+                        <li key={index} className="text-gray-700">
+                            {item.nameOfProduct} - Số lượng: {item.quantity} - Giá: {(item.price * item.quantity).toLocaleString()} VND
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            <div className="mb-4">
+                <h3 className="font-bold text-gray-900">
+                    Tổng tiền: {calculateTotalPrice().toLocaleString()} VND
+                </h3>
             </div>
 
             <button
