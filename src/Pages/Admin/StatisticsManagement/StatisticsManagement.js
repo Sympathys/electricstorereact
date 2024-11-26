@@ -147,31 +147,31 @@ const StatisticsManagement = () => {
           <div className="p-4">
             <button
               onClick={() => setActiveView('table')}
-              className={`w-full ${activeView === 'table' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md`}
+              className={`w-full text-left ${activeView === 'table' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md`}
             >
               Thống kê sản phẩm đã bán
             </button>
             <button
               onClick={() => setActiveView('topProducts')}
-              className={`w-full ${activeView === 'topProducts' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+              className={`w-full text-left ${activeView === 'topProducts' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
             >
               Sản phẩm bán chạy nhất
             </button>
             <button
               onClick={() => setActiveView('lowStock')}
-              className={`w-full ${activeView === 'lowStock' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+              className={`w-full text-left ${activeView === 'lowStock' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
             >
               Sản phẩm bán được ít
             </button>
             <button
               onClick={() => setActiveView('importTotal')}
-              className={`w-full ${activeView === 'importTotal' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+              className={`w-full text-left ${activeView === 'importTotal' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
             >
               Tổng đơn nhập
             </button>
             <button
               onClick={() => setActiveView('revenue')}
-              className={`w-full ${activeView === 'revenue' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
+              className={`w-full text-left ${activeView === 'revenue' ? 'bg-pink-500 text-white' : 'bg-white text-black'} p-2 rounded-md mt-2`}
             >
               Doanh thu
             </button>
