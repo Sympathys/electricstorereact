@@ -141,26 +141,56 @@ const UserForm = ({ selectedUser, onRefresh }) => {
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="flex-grow">
         {/* Dynamic form fields */}
-        {[{ label: 'User Name', type: 'text', name: 'name' },
-          { label: 'Gender', type: 'text', name: 'gender' },
-          { label: 'Phone', type: 'text', name: 'phone' },
+        {[
+          { label: 'Tên', type: 'text', name: 'name' }
+        ].map(({ label, type, ...inputProps }, index) => (
+          <div key={index} className="mb-3">
+            <label className="block mb-1 text-sm">{label}</label>
+            <input
+              type={type}
+              {...inputProps}
+              value={user[inputProps.name] || ''}
+              onChange={handleChange}
+              className="border py-1 px-2 w-full"
+            />
+          </div>
+        ))}
+  
+        {/* Gender field with dropdown */}
+        <div className="mb-3">
+          <label className="block mb-1 text-sm">Giới tính</label>
+          <select
+            name="gender"
+            value={user.gender || ''}
+            onChange={handleChange}
+            className="border py-1 px-2 w-full"
+          >
+            <option value="">Chọn giới tính</option>
+            <option value="Male">Nam</option>
+            <option value="Female">Nữ</option>
+          </select>
+        </div>
+  
+        {[
+          { label: 'Số điện thoại', type: 'text', name: 'phone' },
           { label: 'Email', type: 'email', name: 'email' },
-          { label: 'Address', type: 'text', name: 'address' }].map(({ label, type, ...inputProps }, index) => (
-            <div key={index} className="mb-3">
-              <label className="block mb-1 text-sm">{label}</label>
-              <input
-                type={type}
-                {...inputProps}
-                value={user[inputProps.name] || ''}
-                onChange={handleChange}
-                className="border py-1 px-2 w-full"
-              />
-            </div>
-          ))}
-
+          { label: 'Địa chỉ', type: 'text', name: 'address' }
+        ].map(({ label, type, ...inputProps }, index) => (
+          <div key={index} className="mb-3">
+            <label className="block mb-1 text-sm">{label}</label>
+            <input
+              type={type}
+              {...inputProps}
+              value={user[inputProps.name] || ''}
+              onChange={handleChange}
+              className="border py-1 px-2 w-full"
+            />
+          </div>
+        ))}
+  
         {/* File input for photo */}
         <div className="mb-3">
-          <label className="block mb-1 text-sm">Photo</label>
+          <label className="block mb-1 text-sm">Ảnh</label>
           <input
             type="file"
             accept="image/*"
@@ -168,38 +198,39 @@ const UserForm = ({ selectedUser, onRefresh }) => {
             className="border py-1 px-2 w-full"
           />
         </div>
-
+  
         {/* Image preview with frame */}
         <div className="mb-3 flex justify-center items-center">
           <div className="w-32 h-32 bg-gray-200 flex justify-center items-center border border-dashed border-gray-400">
             {previewImage ? (
               <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-gray-600">No Image</span>
+              <span className="text-gray-600">Không có ảnh</span>
             )}
           </div>
         </div>
-
+  
         {/* Button actions */}
         <div className="flex space-x-4 mt-4">
           {[
             { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedUser },
             { label: 'Làm mới', onClick: () => { resetForm(); onRefresh(); }, color: 'blue-500' },
-            { label: 'Save', onClick: handleSubmit, color: 'purple-500', disabled: !user.name || !user.phone || !user.email }].map(({ label, onClick, color, disabled }, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={onClick}
-                className={`bg-${color} text-white px-3 py-1 text-sm rounded ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={disabled}
-              >
-                {label}
-              </button>
-            ))}
+            { label: 'Lưu', onClick: handleSubmit, color: 'purple-500', disabled: !user.name || !user.phone || !user.email }
+          ].map(({ label, onClick, color, disabled }, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={onClick}
+              className={`bg-${color} text-white px-3 py-1 text-sm rounded ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={disabled}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </form>
     </div>
-  );
+  );  
 };
 
 export default UserForm;

@@ -237,13 +237,18 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
         </div>
         <div className="mb-3">
           <label className="block mb-1 text-sm">Loại sản phẩm</label>
-          <input
-            type="text"
+          <select
             name="typeProduct"
             value={product.typeProduct || ''}
             onChange={handleChange}
             className="border py-1 px-2 w-full"
-          />
+          >
+            <option value="">Chọn loại sản phẩm</option>
+            <option value="Điện thoại">Điện thoại</option>
+            <option value="Máy tính bản">Máy tính bản</option>
+            <option value="Camera">Camera</option>
+            <option value="Laptop">Laptop</option>
+          </select>
         </div>
         <div className="mb-3">
           <label className="block mb-1 text-sm">Mô tả sản phẩm</label>

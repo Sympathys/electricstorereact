@@ -6,13 +6,24 @@ import {
 const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchBy, setSearchBy] = useState('nameOfProduct'); // Default search by product name
+  const [quantityRange, setQuantityRange] = useState({ min: '', max: '' }); // Range for quantity
   const [page, setPage] = useState(0); // Current page index
   const [rowsPerPage, setRowsPerPage] = useState(10); // Number of rows per page
 
+  // Handle range input change
+  const handleRangeChange = (field, value) => {
+    setQuantityRange((prev) => ({ ...prev, [field]: value }));
+  };
+
   // Filter the warehouse data based on search criteria
-  const filteredWarehouses = warehouses.filter((warehouse) =>
-    warehouse[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredWarehouses = warehouses.filter((warehouse) => {
+    if (searchBy === 'quantity') {
+      const min = parseInt(quantityRange.min, 10) || 0;
+      const max = parseInt(quantityRange.max, 10) || Number.MAX_VALUE;
+      return warehouse.quantity >= min && warehouse.quantity <= max;
+    }
+    return warehouse[searchBy]?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   // Handle pagination page change
   const handleChangePage = (event, newPage) => {
@@ -39,14 +50,37 @@ const WarehouseTable = ({ warehouses, onWarehouseSelect }) => {
       </Typography>
       
       <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
-        <TextField
-          label="Tìm kiếm"
-          variant="outlined"
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ flex: 1 }}
-        />
+        {searchBy === 'quantity' ? (
+          <>
+            <TextField
+              label="Số lượng từ"
+              variant="outlined"
+              size="small"
+              type="number"
+              value={quantityRange.min}
+              onChange={(e) => handleRangeChange('min', e.target.value)}
+              sx={{ flex: 1 }}
+            />
+            <TextField
+              label="Số lượng đến"
+              variant="outlined"
+              size="small"
+              type="number"
+              value={quantityRange.max}
+              onChange={(e) => handleRangeChange('max', e.target.value)}
+              sx={{ flex: 1 }}
+            />
+          </>
+        ) : (
+          <TextField
+            label="Tìm kiếm"
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ flex: 1 }}
+          />
+        )}
         <TextField
           select
           label="Tìm kiếm theo"
