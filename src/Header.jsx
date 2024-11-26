@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clientAPI from "./client-api/rest-client";
+import Logo from './images/logo.jpg';
 
 const Header = () => {
   const [user, setUser] = useState(null);
@@ -76,19 +77,21 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-    const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
-    if (isConfirmed) {
-      try {
-        const data = await clientAPI.service("services/sign-out").create();
-        localStorage.removeItem("user");
-        localStorage.removeItem("userToken");
-        
-        navigate(`/LogIn`);
-      } catch (error) {
-        console.error("Error during logout:", error);
+      const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
+      if (isConfirmed) {
+          try {
+              await clientAPI.service("services/sign-out").create();
+          } catch (error) {
+              console.error("Error during logout:", error);
+          }
+
+          // Dù có lỗi hay không, vẫn thực hiện các dòng này
+          localStorage.removeItem("user");
+          localStorage.removeItem("userToken");
+          navigate(`/LogIn`);
       }
-    }
   };
+
 
   const handleCartClick = () => {
     navigate("/CartPage");
@@ -117,7 +120,7 @@ const Header = () => {
         <div>
           <Link to="/HomePage" className="flex items-center">
             <img
-              src="https://via.placeholder.com/50"
+              src={Logo}
               alt="Logo"
               className="w-12 h-12"
             />
@@ -203,13 +206,7 @@ const Header = () => {
                       </Link>
                     </>
                   )}
-                  <Link
-                    to="/settings"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Cài đặt
-                  </Link>
+                  
                   <Link
                     to="/ChangePassword"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"

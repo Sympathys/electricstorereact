@@ -15,8 +15,7 @@ const InfoUser = () => {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user.idUser;
-    const role = user.data.role;
-    console.log(userId);
+    const role = user.data.role === "staff" ? "staff" : "user";
 
     const fetchUserInfo = async () => {
       try {
@@ -40,7 +39,7 @@ const InfoUser = () => {
 
   const handleSave = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
-    const role = user.data.role;
+    const role = user.data.role === "staff" ? "staff" : "user";
     try {
       const data = await clientAPI.service(role).patch(user.idUser, userInfo);
       window.alert("Thông tin người dùng đã được lưu thành công!"); // Success message
