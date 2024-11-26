@@ -59,7 +59,6 @@ const SignUp = () => {
         
         window.alert("Truy cập vào email bạn dùng để đăng ký để xác nhận đăng ký!");
         navigate('/LogIn');
-        console.log(data);
     } catch (error) {
         if (error.response && error.response.data) {
             window.alert(`Error: ${error.response.data.message}`);
