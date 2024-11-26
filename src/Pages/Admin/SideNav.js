@@ -12,7 +12,7 @@ const SideNav = () => {
     { path: '/ProviderManagement', label: 'Quản lý nhà cung cấp' },
     { path: '/WarehouseManagement', label: 'Quản lý kho' },
     { path: '/OrderManagement', label: 'Quản lý hóa đơn' },
-    { path: '/UserManagement', label: 'Quản lý thông tin tài khoản' },
+    { path: '/UserManagement', label: 'Quản lý thông tin người dùng' },
     { path: '/AccountManagement', label: 'Quản lý tài khoản' },
     { path: '/ExpressCompanyManagement', label: 'Quản lý công ty giao hàng'},
     { path: '/StatisticsManagement', label: 'Thống kê' },

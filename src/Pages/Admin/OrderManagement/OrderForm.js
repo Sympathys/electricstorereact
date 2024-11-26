@@ -230,8 +230,8 @@ const OrderForm = ({ selectedOrder, onRefresh }) => {
         {/* Action Buttons */}
         <div className="flex space-x-4 mt-4">
           {[ 
-            { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500', disabled: false },
-            { label: 'Sửa', onClick: handleSubmit, color: 'blue-500', disabled: !order._id },
+            { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500', disabled: !!order._id },
+            { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !order._id },
             { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !order._id },
           ].map(({ label, onClick, color, disabled }, index) => (
             <button

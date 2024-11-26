@@ -106,7 +106,7 @@ const ProviderForm = ({ selectedProvider, onRefresh }) => {
   
         <div className="flex space-x-4 mt-4">
           {[
-            { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500' },
+            { label: 'Thêm', onClick: handleSubmit, color: 'yellow-500', disabled: !!selectedProvider },
             { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedProvider },
             { label: 'Xóa', onClick: handleDelete, color: 'red-500', disabled: !selectedProvider },
             { label: 'Làm mới', onClick: () => { resetForm(); onRefresh(); }, color: 'blue-500' }
