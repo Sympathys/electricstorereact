@@ -86,9 +86,21 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/UserManagement" element={<UserManagement/>}/>
-          <Route path="/AccountManagement" element={<AccountManagement/>}/>
-          <Route path="/ExpressCompanyManagement" element={<ExpressCompanyManagement/>}/>
+          <Route path="/UserManagement" element={
+            <ProtectedRoute role={role} allowedRoles={["admin"]}>
+              <UserManagement/>
+            </ProtectedRoute>
+          }/>
+          <Route path="/AccountManagement" element={
+            <ProtectedRoute role={role} allowedRoles={["admin"]}>
+              <AccountManagement/>
+            </ProtectedRoute>
+            }/>
+          <Route path="/ExpressCompanyManagement" element={
+            <ProtectedRoute role={role} allowedRoles={["admin"]}>
+              <ExpressCompanyManagement/>
+            </ProtectedRoute>
+            }/>
           <Route path ="/CartPage" element = {<CartPage/>}/>
           <Route path ="/CheckoutPage" element = {<CheckoutPage/>}/>
           <Route path = "/products/:type" element = {<ProductListing/>} />
