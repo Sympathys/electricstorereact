@@ -9,6 +9,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0,0);
     const fetchProductDetail = async () => {
       try {
         const data = await clientAPI.service('product').get(id);
