@@ -282,7 +282,7 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
         <button
           type="submit"
           className={`bg-yellow-500 text-white px-3 py-1 text-sm rounded ${product.idProduct ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={!!product.idProduct}
+          
         >
           Thêm
         </button>
