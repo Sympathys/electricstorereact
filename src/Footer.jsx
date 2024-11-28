@@ -51,15 +51,12 @@ const Footer = () => {
           </div>
           {/* Hỗ trợ khách hàng */}
           <div className="flex-1 mx-4">
-            <h4 className="font-bold text-lg mb-2">HỖ TRỢ KHÁCH HÀNG</h4>
-            <p className="text-white">Hướng dẫn mua hàng</p>
-            <p className="text-white">Hướng dẫn Thanh toán</p>
           </div>
 
           {/* Hệ thống cửa hàng */}
           <div className="flex-1 mx-4">
             <h4 className="font-bold text-lg mb-2">HỆ THỐNG CỬA HÀNG</h4>
-            <p className="text-white">Tìm kiếm cửa hàng gần bạn</p>
+            <p className="text-white">Số 1, Đường Võ Văn Ngân, Phường Linh Chiểu, Thành Phố Thủ Đức</p>
           </div>
         </div>
 
