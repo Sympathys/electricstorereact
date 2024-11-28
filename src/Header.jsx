@@ -48,10 +48,9 @@ const Header = () => {
   }, [searchTerm, products]);
 
   useEffect(() => {
-    // Hàm kiểm tra sự kiện click bên ngoài
     const handleOutsideClick = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setFilteredProducts([]); // Ẩn danh sách sản phẩm khi click ra ngoài
+        setFilteredProducts([]);
       }
     };
 
@@ -68,7 +67,6 @@ const Header = () => {
     if (value.trim() === "") {
       setFilteredProducts([]);
     } else {
-      // Mô phỏng tìm kiếm sản phẩm
       const results = products.data.filter((product) =>
         product.nameOfProduct.toLowerCase().includes(value.toLowerCase())
       );
@@ -77,21 +75,19 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-      const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
-      if (isConfirmed) {
-          try {
-              await clientAPI.service("services/sign-out").create();
-          } catch (error) {
-              console.error("Error during logout:", error);
-          }
-
-          // Dù có lỗi hay không, vẫn thực hiện các dòng này
-          localStorage.removeItem("user");
-          localStorage.removeItem("userToken");
-          navigate(`/LogIn`);
+    const isConfirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
+    if (isConfirmed) {
+      try {
+        await clientAPI.service("services/sign-out").create();
+      } catch (error) {
+        console.error("Error during logout:", error);
       }
-  };
 
+      localStorage.removeItem("user");
+      localStorage.removeItem("userToken");
+      navigate(`/LogIn`);
+    }
+  };
 
   const handleCartClick = () => {
     navigate("/CartPage");
@@ -118,38 +114,55 @@ const Header = () => {
     <header className="w-full bg-gray-100 border-b">
       <div className="flex items-center justify-between py-2 px-4 bg-white">
         <div>
-          <Link to="/HomePage" className="flex items-center">
-            <img
-              src={Logo}
-              alt="Logo"
-              className="w-12 h-12"
-            />
-            <div className="ml-2">
-              <span className="text-pink-500 text-lg font-bold">
-                ONLINE E-STORE
-              </span>
+          {user?.role === "staff" ? (
+            <div className="flex items-center">
+              <img
+                src={Logo}
+                alt="Logo"
+                className="w-12 h-12"
+              />
+              <div className="ml-2">
+                <span className="text-pink-500 text-lg font-bold">
+                  ONLINE E-STORE
+                </span>
+              </div>
             </div>
-          </Link>
+          ) : (
+            <Link to="/HomePage" className="flex items-center">
+              <img
+                src={Logo}
+                alt="Logo"
+                className="w-12 h-12"
+              />
+              <div className="ml-2">
+                <span className="text-pink-500 text-lg font-bold">
+                  ONLINE E-STORE
+                </span>
+              </div>
+            </Link>
+          )}
         </div>
 
         <div ref={searchRef} className="flex items-center w-1/2 relative">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500"
-            placeholder="Tìm kiếm sản phẩm trên shop..."
-          />
-          {filteredProducts.length > 0 && (
+          {user?.role !== "staff" && (
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500"
+              placeholder="Tìm kiếm sản phẩm trên shop..."
+            />
+          )}
+          {user?.role !== "staff" && filteredProducts.length > 0 && (
             <ul className="absolute top-10 left-0 right-0 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
               {filteredProducts.map((product) => (
                 <li
                   key={product.id}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    setSearchTerm(""); // Xóa nội dung ô tìm kiếm
-                    setFilteredProducts([]); // Xóa danh sách gợi ý
-                    navigate(`/product/${product._id}`); // Điều hướng đến trang sản phẩm
+                    setSearchTerm("");
+                    setFilteredProducts([]);
+                    navigate(`/product/${product._id}`);
                   }}
                 >
                   {product.nameOfProduct}
@@ -160,13 +173,15 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-6">
-          <div
-            className="flex items-center cursor-pointer"
-            onClick={handleCartClick}
-          >
-            <i className="fas fa-shopping-cart text-gray-600"></i>
-            <span className="ml-1 text-gray-600">Giỏ hàng</span>
-          </div>
+          {user?.role !== "staff" && (
+            <div
+              className="flex items-center cursor-pointer"
+              onClick={handleCartClick}
+            >
+              <i className="fas fa-shopping-cart text-gray-600"></i>
+              <span className="ml-1 text-gray-600">Giỏ hàng</span>
+            </div>
+          )}
 
           {user ? (
             <div ref={dropdownRef} className="relative">
@@ -196,17 +211,15 @@ const Header = () => {
                     </Link>
                   )}
                   {user.role === "staff" && (
-                    <>
-                      <Link
-                        to="/orders-staff-page"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        Quản lý đơn hàng
-                      </Link>
-                    </>
+                    <Link
+                      to="/orders-staff-page"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Quản lý đơn hàng
+                    </Link>
                   )}
-                  
+
                   <Link
                     to="/ChangePassword"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -252,13 +265,12 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <i className="fas fa-envelope"></i>
-              <span className="ml-2">hpn@gmail.com</span>
+              <span className="ml-2">tanphatzt1@gmail.com</span>
             </div>
             <div className="flex items-center">
               <i className="fas fa-phone"></i>
               <span className="ml-2">0123 432 231</span>
             </div>
-            <div className="cursor-pointer hover:underline">Liên hệ</div>
           </div>
         </div>
       </div>

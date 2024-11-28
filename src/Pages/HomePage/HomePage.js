@@ -75,12 +75,7 @@ const HomePage = () => {
             </li>
           </ul>
 
-          <h2 className="text-lg font-bold mt-8 mb-4">KHÁC</h2>
-          <ul className="space-y-2">
-            <li>Hướng dẫn mua hàng</li>
-            <li>Hướng dẫn thanh toán</li>
-            <li>Tuyển dụng</li>
-          </ul>
+          
         </div>
 
         {/* Phần banner */}
