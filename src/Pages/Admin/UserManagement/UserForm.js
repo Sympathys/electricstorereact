@@ -211,17 +211,16 @@ const UserForm = ({ selectedUser, onRefresh }) => {
         </div>
   
         {/* Button actions */}
-        <div className="flex space-x-4 mt-4">
+        <div className="flex justify-center space-x-4 mt-4">
           {[
             { label: 'Sửa', onClick: handleSubmit, color: 'green-500', disabled: !selectedUser },
             { label: 'Làm mới', onClick: () => { resetForm(); onRefresh(); }, color: 'blue-500' },
-            { label: 'Lưu', onClick: handleSubmit, color: 'purple-500', disabled: !user.name || !user.phone || !user.email }
           ].map(({ label, onClick, color, disabled }, idx) => (
             <button
               key={idx}
               type="button"
               onClick={onClick}
-              className={`bg-${color} text-white px-3 py-1 text-sm rounded ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-${color} text-white px-4 py-2 text-sm font-medium rounded-md w-32 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={disabled}
             >
               {label}

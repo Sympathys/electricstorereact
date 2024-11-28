@@ -281,8 +281,7 @@ const ProductForm = ({ selectedProduct, onRefresh }) => {
         <div className="flex space-x-4 mt-4">
         <button
           type="submit"
-          className={`bg-yellow-500 text-white px-3 py-1 text-sm rounded ${product.idProduct ? 'opacity-50 cursor-not-allowed' : ''}`}
-          
+          className={`bg-yellow-500 text-white px-3 py-1 text-sm rounded}`}
         >
           Thêm
         </button>

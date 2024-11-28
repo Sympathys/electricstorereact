@@ -126,7 +126,13 @@ function App() {
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} /> {/* Định tuyến tất cả các URL không khớp */}
           <Route path="/verification-success" element={<VerificationSuccess/>} />
-          <Route path="/StatisticsManagement" element={<StatisticsManagement/>}/>
+          <Route path="/StatisticsManagement"
+            element={
+            <ProtectedRoute role={role} allowedRoles={["admin"]}>
+              <StatisticsManagement/>
+            </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer/>
       </div>
